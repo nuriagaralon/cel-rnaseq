@@ -1,0 +1,212 @@
+configfile: "config/snake_config.yaml"
+
+include:
+    "workflow/rules/qc.smk"
+include:
+    "workflow/rules/trimming.smk"
+include:
+    "workflow/rules/mapping.smk"
+include:
+    "workflow/rules/expression.smk"
+include:
+    "workflow/rules/dge_analysis.smk"
+
+#rule all: 
+#    input:
+#        #all files needed to get all output files. for exmaple, some qc might not run with only necessary files.
+#
+
+
+'''
+What to do when benchmarking and running alternative tools?
+- Multiple rule alls: rename to all_macrogen when doing another pipeline, then get other all_star, etc.
+- Each rules file has more than one option, so do it one by one to check.
+The problem is that each tool should be tested one by one, maybe, but to not forget it. 
+- But maybe hisat+bowtie is better than star+whatever, even if star better than bowtie.
+Think on how to do it.
+'''
+
+MULTIFR = ["R1", "R2", "SE"]
+
+rule all:
+    input:
+        "read_quality/QC_raw/qcreport_raw.html",
+        "read_quality/QC_trimmed/qcreport_trimmed.html",
+        expand("expression/{sample}/compare.stats", sample=config['samples'])
+
+
+## QC
+rule fastqc_raw:
+    input:
+        "raw_data/samples/{sample}.fastq.gz"
+    output:
+        "read_quality/QC_raw/fastqc/{sample}_fastqc.zip"
+    params:
+        outdir="read_quality/QC_raw/fastqc"
+    threads: 4
+    shell:
+        """
+        fastqc -t {threads} -o {params.outdir} --dir {params.outdir} {input}
+        """
+
+
+rule multiqc_raw:
+    input:
+        expand("read_quality/QC_raw/fastqc/{sample}_{pr}_fastqc.zip", sample=config['samples'], pr=config['pairedreads'])
+    output:
+        "read_quality/QC_raw/qcreport_raw.html"
+    params:
+        outdir="read_quality/QC_raw"
+    threads: 1
+    shell:
+        """
+        FILENAME=$(basename {output})
+        multiqc {params.outdir} -n $FILENAME -o {params.outdir}
+        """
+
+#Problem: multiqc will only wait for exp232. need to change it somehow... probably with an expand. or something. like that.
+
+rule fastqc_trimmed:
+    input:
+        "preprocessed/{sample}_{type}.trimmed.fastq.gz"
+    output:
+        "read_quality/QC_trimmed/fastqc/{sample}_{type}_fastqc.zip"
+    params:
+        outdir="read_quality/QC_trimmed/fastqc"
+    threads: 4
+    shell:
+        """
+        fastqc -t {threads} -o {params.outdir} --dir {params.outdir} {input}
+        """
+
+
+rule multiqc_trimmed:
+    input:
+        expand("read_quality/QC_trimmed/fastqc/{sample}_{pr}_fastqc.zip", sample=config['samples'], pr=MULTIFR) 
+    output:
+        "read_quality/QC_trimmed/qcreport_trimmed.html"
+    params:
+        outdir="read_quality/QC_trimmed"
+    threads: 1
+    shell:
+        """
+        FILENAME=$(basename {output})
+        multiqc {params.outdir} -n $FILENAME -o {params.outdir}
+        """
+
+## Preprocessing
+rule trimmomatic_trim:
+    input:
+        expand("raw_data/samples/{{sample}}_{pr}.fastq.gz", pr=config['pairedreads'])
+    output:
+        "preprocessed/{sample}_R1.trimmed.fastq.gz",
+        temp("preprocessed/{sample}_SE1.trimmed.fastq.gz"),
+        "preprocessed/{sample}_R2.trimmed.fastq.gz",
+        temp("preprocessed/{sample}_SE2.trimmed.fastq.gz")
+    params:
+        adapter="raw_data/TruSeq3-PE-2.fa",
+        seed_mismatch=2,
+        palindrome_clip=30,
+        simple_clip=10,
+        adapter_length=5,
+        crop_lowq="true",
+        leading=3,
+        trailing=3,
+        window_size=4,
+        window_quality=15,
+        minlen=36
+    threads: 4
+    shell:
+        """
+        trimmomatic PE -threads {threads} {input} {output} \
+        ILLUMINACLIP:{params.adapter}:{params.seed_mismatch}:{params.palindrome_clip}:{params.simple_clip}:{params.adapter_length}:{params.crop_lowq} \
+        LEADING:{params.leading} \
+        TRAILING:{params.trailing} \
+        SLIDINGWINDOW:{params.window_size}:{params.window_quality} \
+        MINLEN:{params.minlen}
+        """
+
+rule trim_join_SE:
+    input:
+        "preprocessed/{sample}_SE1.trimmed.fastq.gz",
+        "preprocessed/{sample}_SE2.trimmed.fastq.gz"
+    output:
+        "preprocessed/{sample}_SE.trimmed.fastq.gz"
+    threads: 1
+    shell:
+        "cat {input[0]} {input[1]} > {output}"
+
+## Alignment
+rule hisat2_index:
+    input:
+        "raw_data/references/{genome}.fa"
+    output:
+        #expand("alignment/index/{genome}.{i}.ht2", i=range(1,9))
+        "alignment/index/{genome}.1.ht2",
+        "alignment/index/{genome}.2.ht2",
+        "alignment/index/{genome}.3.ht2",
+        "alignment/index/{genome}.4.ht2",
+        "alignment/index/{genome}.5.ht2",
+        "alignment/index/{genome}.6.ht2",
+        "alignment/index/{genome}.7.ht2",
+        "alignment/index/{genome}.8.ht2"
+    threads: 16
+    params:
+        outindex="alignment/index/{genome}"
+    shell:
+        """
+        hisat2-build -p {threads} {input} {params.outindex}
+        """
+
+rule hisat2_align:
+    input:
+        "preprocessed/{sample}_R1.trimmed.fastq.gz",
+        "preprocessed/{sample}_R2.trimmed.fastq.gz",
+        expand("alignment/index/{genome}.{i}.ht2", genome=config["genome"], i=range(1,9))
+    output:
+        bam="alignment/{sample}.bam",
+        bambai="alignment/{sample}.bam.bai"
+    threads: 8
+    params:
+        strandedness="RF",
+        index=f"alignment/index/{config['genome']}"
+    shell:
+        """
+        hisat2 -p {threads} --dta --rna-strandedness {params.strandedness} \
+        -x {params.index} -1 {input[0]} -2 {input[1]} | samtools view -bhS | samtools sort -o {output.bam}
+        sambamba index {output.bam}
+        """
+#--summary-file {output.sum} --met-file {output.met}
+
+## Expression - Besides stringtie, check htseq and stuff helena gave to me
+rule stringtie_expression:
+    input:
+        "alignment/{sample}.bam"
+    output:
+        "expression/{sample}/{sample}.gtf",
+        "expression/{sample}/{sample}.gene_abund.anno.tab"
+    params:
+        refgen="raw_data/references/WBcel235_GCF_000002985.6.gtf"
+    threads: 8
+    shell:
+        """
+        stringtie {input} -p {threads} --rf -l {wildcards.sample} \
+        -o {output[0]} -G {params.refgen} -A {output[1]} -eB
+        """
+
+rule stringtie_quality:
+    input:
+        "expression/{sample}/{sample}.gtf"
+    output:
+        "expression/{sample}/compare.stats"
+    params:
+        refgen="raw_data/references/WBcel235_GCF_000002985.6.gtf",
+        prefix="expression/{sample}/compare"
+    threads: 2
+    shell:
+        """
+        gffcompare -R -r {params.refgen} {input} -o {params.prefix}
+        """
+
+# DEG
+

@@ -1,0 +1,15 @@
+samples:
+  Exp_2_3:
+    - raw_data/samples/Exp_2_3_1.fastq.gz
+    - raw_data/samples/Exp_2_3_2.fastq.gz
+  Neg_1_2:
+    - raw_data/samples/Neg_1_2_1.fastq.gz
+    - raw_data/samples/Neg_1_2_2.fastq.gz
+pairedreads:
+  - 1
+  - 2
+genome:
+  WBcel235: raw_data/references/WBcel235.fa
+annotation: 
+  WBcel235: raw_data/references/WBcel235_GCF_000002985.6.gtf
+adapters: raw_data/references/TruSeq3-PE-2.fa
