@@ -24,7 +24,7 @@ rule trimmomatic_trim:
     benchmark:
         "workflow/benchmarks/trimmomatic_trim/{sample}.tsv"
     conda:
-        "envs/trimmomatic.yaml"
+        "../envs/trimmomatic.yaml"
     shell:
         """
         trimmomatic PE -threads {threads} {input} {output} \
@@ -32,7 +32,7 @@ rule trimmomatic_trim:
         LEADING:{params.leading} \
         TRAILING:{params.trailing} \
         SLIDINGWINDOW:{params.window_size}:{params.window_quality} \
-        MINLEN:{params.minlen}
+        MINLEN:{params.minlen} &>> {log}
         """
 
 rule trim_join_SE:
@@ -47,4 +47,4 @@ rule trim_join_SE:
     benchmark:
         "workflow/benchmarks/trim_join_SE/{sample}.tsv"    
     shell:
-        "cat {input[0]} {input[1]} > {output}"
+        "cat {input[0]} {input[1]} > {output} 2>> {log}"

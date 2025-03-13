@@ -11,10 +11,10 @@ rule fastqc_raw:
     benchmark: 
         "workflow/benchmarks/fastqc_raw/{sample_pr}.tsv"
     conda:
-        "envs/qc.yaml"
+        "../envs/qc.yaml"
     shell:
         """
-        fastqc -t {threads} -o {params.outdir} --dir {params.outdir} {input}
+        fastqc -t {threads} -o {params.outdir} --dir {params.outdir} {input} &>> {log}
         """
 
 
@@ -31,11 +31,11 @@ rule multiqc_raw:
     benchmark:
         "workflow/benchmarks/multiqc_raw/multiqc.tsv"
     conda:
-        "envs/qc.yaml"
+        "../envs/qc.yaml"
     shell:
         """
         FILENAME=$(basename {output})
-        multiqc {params.outdir} -n $FILENAME -o {params.outdir}
+        multiqc {params.outdir} -n $FILENAME -o {params.outdir} &>> {log}
         """
 
 rule fastqc_trimmed:
@@ -51,10 +51,10 @@ rule fastqc_trimmed:
     benchmark: 
         "workflow/benchmarks/fastqc_trimmed/{sample}_{type}.tsv"
     conda:
-        "envs/qc.yaml"
+        "../envs/qc.yaml"
     shell:
         """
-        fastqc -t {threads} -o {params.outdir} --dir {params.outdir} {input}
+        fastqc -t {threads} -o {params.outdir} --dir {params.outdir} {input} &>> {log}
         """
 
 MULTIFR = ["R1", "R2", "SE"]
@@ -72,9 +72,9 @@ rule multiqc_trimmed:
     benchmark:
         "workflow/benchmarks/multiqc_trimmed/multiqc.tsv"
     conda:
-        "envs/qc.yaml"
+        "../envs/qc.yaml"
     shell:
         """
         FILENAME=$(basename {output})
-        multiqc {params.outdir} -n $FILENAME -o {params.outdir}
+        multiqc {params.outdir} -n $FILENAME -o {params.outdir} &>> {log}
         """

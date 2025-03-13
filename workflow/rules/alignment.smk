@@ -11,10 +11,10 @@ rule hisat2_index:
     benchmark:
         "workflow/benchmarks/hisat2_index/{genome}.tsv"
     conda:
-        "envs/hisat.yaml"
+        "../envs/hisat.yaml"
     shell:
         """
-        hisat2-build -p {threads} {input} {params.outindex}
+        hisat2-build -p {threads} {input} {params.outindex} &>> {log}
         """
 
 rule hisat2_align:
@@ -34,11 +34,11 @@ rule hisat2_align:
     benchmark:
         "workflow/benchmarks/hisat2_align/{sample}.tsv"
     conda:
-        "envs/hisat.yaml"
+        "../envs/hisat.yaml"
     shell:
         """
-        hisat2 -p {threads} --dta --rna-strandedness {params.strandedness} \
+        (hisat2 -p {threads} --dta --rna-strandedness {params.strandedness} \
         -x {params.index} -1 {input[0]} -2 {input[1]} | samtools view -bhS | samtools sort -o {output.bam}
-        sambamba index {output.bambai}
+        sambamba index {output.bambai}) &>> {log}
         """
 #--summary-file {output.sum} --met-file {output.met}

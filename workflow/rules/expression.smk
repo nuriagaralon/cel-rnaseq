@@ -13,11 +13,11 @@ rule stringtie_expression:
     benchmark:
         "workflow/benchmarks/stringtie_expression/{sample}.tsv"
     conda:
-        "envs/stringtie.yaml"
+        "../envs/stringtie.yaml"
     shell:
         """
         stringtie {input} -p {threads} --rf -l {wildcards.sample} \
-        -o {output[0]} -G {params.refgen} -A {output[1]} -eB
+        -o {output[0]} -G {params.refgen} -A {output[1]} -eB &>> {log}
         """
 
 rule stringtie_quality:
@@ -34,8 +34,8 @@ rule stringtie_quality:
     benchmark:
         "workflow/benchmarks/stringtie_quality/{sample}.tsv"
     conda:
-        "envs/stringtie.yaml"
+        "../envs/stringtie.yaml"
     shell:
         """
-        gffcompare -R -r {params.refgen} {input} -o {params.prefix}
+        gffcompare -R -r {params.refgen} {input} -o {params.prefix} &>> {log}
         """
