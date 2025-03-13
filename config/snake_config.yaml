@@ -9,7 +9,7 @@ pairedreads:
   - 1
   - 2
 genome:
-  WBcel235: raw_data/references/WBcel235.fa
-annotation: 
-  WBcel235: raw_data/references/WBcel235_GCF_000002985.6.gtf
+  genome_name: WBcel235
+  genome_file: raw_data/references/WBcel235.fa
+  annotation_file: raw_data/references/WBcel235_GCF_000002985.6.gtf
 adapters: raw_data/references/TruSeq3-PE-2.fa

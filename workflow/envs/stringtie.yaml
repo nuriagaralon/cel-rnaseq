@@ -1,0 +1,6 @@
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - stringtie =2.2.3
+  - gffcompare =0.12.6

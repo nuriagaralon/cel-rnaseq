@@ -1,3 +1,4 @@
 raw_data/samples/*
 raw_data/references/*
 raw_data/SampleMetadata.txt
+.snakemake
