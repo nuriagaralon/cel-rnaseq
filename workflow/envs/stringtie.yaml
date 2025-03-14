@@ -1,6 +1,7 @@
+name: cel-stringtie
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
 dependencies:
   - stringtie =2.2.3
   - gffcompare =0.12.6

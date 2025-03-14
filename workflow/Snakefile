@@ -1,5 +1,9 @@
 configfile: "config/snake_config.yaml"
 
+import time
+import os
+import csv
+
 include:
     "rules/qc.smk"
 include:
@@ -41,3 +45,84 @@ The problem is that each tool should be tested one by one, maybe, but to not for
 - But maybe hisat+bowtie is better than star+whatever, even if star better than bowtie.
 Think on how to do it.
 '''
+def compile_benchmarks(benchmark_fp: str, stats_fp: str):
+    """Aggregate all the benchmark files into one and put it in stats_fp. Modified from Ulthran (ctbushman@gmail.com) on Github"""
+    benchmarks = []
+    # Recursively find all files in the benchmark_fp directory and its subdirectories
+    for root, dirs, files in os.walk(benchmark_fp):
+        for file in files:
+            benchmarks.append(os.path.join(root, file))
+
+    if not benchmarks:
+        print("No benchmark files found")
+        return None
+    headers = ["rule"]
+    with open(benchmarks[0], "r") as f:
+        reader = csv.reader(f, delimiter="\t")
+        headers += next(reader)
+
+    if not os.path.exists(stats_fp):
+        os.makedirs(stats_fp)
+    stats_file = os.path.join(
+        stats_fp,
+        f"{time.strftime("%Y%m%d-%H%M%S")}_benchmarks.tsv",
+    )
+    with open(stats_file, "w") as f:
+        writer = csv.writer(f, delimiter="\t")
+        writer.writerow(headers)
+        for fp in benchmarks:
+            with open(fp, "r") as g:
+                reader = csv.reader(g, delimiter="\t")
+                next(reader)  # Headers line
+                writer.writerow([fp[20:-4]] + next(reader))
+    print(f"Benchmarks aggregated at {stats_file}")
+
+
+def compile_logs(log_fp: str, stats_fp: str):
+    """Aggregate all the log files into one and put it in stats_fp. Modified from Ulthran (ctbushman@gmail.com) on Github"""
+    logs = []
+    # Recursively find all files in the log_fp directory and its subdirectories
+    for root, dirs, files in os.walk(log_fp):
+        for file in files:
+            logs.append(os.path.join(root, file))
+
+    if not logs:
+        print("No log files found")
+        return None
+
+    if not os.path.exists(stats_fp):
+        os.makedirs(stats_fp)
+    stats_file = os.path.join(
+        stats_fp,
+        f"{time.strftime("%Y%m%d-%H%M%S")}_logs.log",
+    )
+    with open(stats_file, "w") as f:
+        for fp in logs:
+            with open(fp, "r") as g:
+                f.write(f"{fp[14:-4]}\n")
+                f.write(g.read())
+                f.write("\n\n")
+    print(f"Logs aggregated at {stats_file}")
+
+def remove_benchmarks_and_logs(benchmark_fp: str, log_fp: str):
+    for root, dirs, files in os.walk(log_fp):
+        for file in files:
+            if file.endswith(".log"):
+                os.remove(os.path.join(root, file))
+    for root, dirs, files in os.walk(benchmark_fp):
+        for file in files:
+            if file.endswith(".tsv"):
+                os.remove(os.path.join(root, file))
+    print("Removed old logs and benchmarks")
+
+onstart:
+    remove_benchmarks_and_logs("workflow/benchmarks", "workflow/logs")
+
+onsuccess:
+    compile_benchmarks("workflow/benchmarks", "workflow/stats")
+    compile_logs("workflow/logs", "workflow/stats")
+
+onerror:
+    compile_benchmarks("workflow/benchmarks", "workflow/stats")
+    compile_logs("workflow/logs", "workflow/stats")
+

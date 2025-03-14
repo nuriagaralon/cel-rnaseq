@@ -1,6 +1,8 @@
+name: cel-qc
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
 dependencies:
+  - python =3.10
   - fastqc =0.12.1
-  - multiqc =1.25.2
+  - multiqc =1.27.1
