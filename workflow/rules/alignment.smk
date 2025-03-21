@@ -26,7 +26,7 @@ rule hisat2_align:
         bam="results/alignment/{sample}.bam",
         bambai="results/alignment/{sample}.bam.bai"
     params:
-        strandedness="RF",
+        strandness="RF",
         index=f"results/alignment/index/{config['genome']["genome_name"]}"
     threads: 8
     log:
@@ -37,8 +37,8 @@ rule hisat2_align:
         "../envs/hisat.yaml"
     shell:
         """
-        (hisat2 -p {threads} --dta --rna-strandedness {params.strandedness} \
+        (hisat2 -p {threads} --dta --rna-strandness {params.strandness} \
         -x {params.index} -1 {input[0]} -2 {input[1]} | samtools view -bhS | samtools sort -o {output.bam}
-        sambamba index {output.bambai}) &>> {log}
+        sambamba index {output.bam}) &>> {log}
         """
 #--summary-file {output.sum} --met-file {output.met}
