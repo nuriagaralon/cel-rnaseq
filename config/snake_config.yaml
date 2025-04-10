@@ -1,3 +1,11 @@
+tools:
+  trim: trimmomatic
+#  trim: trimgalore
+  map: hisat2
+#  map: STAR
+  expr: stringtie
+#  expr: HTseq
+
 samples:
   Exp_2_3:
     - raw_data/samples/Exp_2_3_1.fastq.gz
@@ -13,3 +21,7 @@ genome:
   genome_file: raw_data/references/WBcel235.fa
   annotation_file: raw_data/references/WBcel235_GCF_000002985.6.gtf
 adapters: raw_data/references/TruSeq3-PE-2.fa
+trimming:
+  adaptlen: 5
+  minlen: 36
+  quality: 15
