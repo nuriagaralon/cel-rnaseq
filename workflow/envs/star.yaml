@@ -1,0 +1,8 @@
+name: cel-star
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - star =2.7.11b
+#  - samtools =1.21
+#  - sambamba =1.0.1
