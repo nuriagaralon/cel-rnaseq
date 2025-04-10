@@ -1,4 +1,3 @@
-#Besides stringtie, check htseq and stuff helena gave to me
 rule stringtie_expression:
     input:
         "results/alignment/{sample}.bam"
@@ -38,4 +37,27 @@ rule stringtie_quality:
     shell:
         """
         gffcompare -R -r {params.refgen} {input} -o {params.prefix} &>> {log}
+        """
+
+rule htseq_expression:
+    input:
+        "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
+        "results/alignment/{sample}.bam"
+    output:
+        "results/expression/{sample}/{sample}.gtf",
+        "results/expression/{sample}/{sample}.gene_abund.anno.tab"
+    params:
+        refgen=config["genome"]["annotation_file"]
+    threads: 8
+    log:
+        "workflow/logs/htseq_expression/{sample}.log"
+    benchmark:
+        "workflow/benchmarks/htseq_expression/{sample}.tsv"
+    conda:
+        "../envs/htseq.yaml"
+    shell:
+        """
+        htseq-count -r pos -s yes -t exon -i gene_id --additional-attr gene_name \
+        /path/to/output/{sample}_Aligned.toTranscriptome.out.bam \
+        /path/to/genome/annotation.gtf > gene_counts.txt 2>> {log}
         """
