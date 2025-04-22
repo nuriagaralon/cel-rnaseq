@@ -81,8 +81,8 @@ rule star_align:
         "results/preprocessed/{sample}_R2.trimmed.fastq.gz",
         "results/alignment/star_index/Genome"
     output:
-        bam="results/alignment/{sample}.bam",
-        bambai="results/alignment/{sample}.bam.bai"
+        "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
+        "results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
     params:
         index="results/alignment/star_index/",
         outpref="results/alignment/star/{sample}_"

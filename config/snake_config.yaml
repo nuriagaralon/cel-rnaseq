@@ -20,6 +20,8 @@ genome:
   genome_name: WBcel235
   genome_file: raw_data/references/WBcel235.fa
   annotation_file: raw_data/references/WBcel235_GCF_000002985.6.gtf
+  transcriptome: raw_data/references/WBcel235_transcriptome_GCF_000002985.6.fa
+  annotation_file2: raw_data/references/WBcel235.gtf
 adapters: raw_data/references/TruSeq3-PE-2.fa
 trimming:
   adaptlen: 5

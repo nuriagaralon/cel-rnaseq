@@ -41,14 +41,12 @@ rule stringtie_quality:
 
 rule htseq_expression:
     input:
-        "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
-        "results/alignment/{sample}.bam"
+        "results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
     output:
-        "results/expression/{sample}/{sample}.gtf",
-        "results/expression/{sample}/{sample}.gene_abund.anno.tab"
+        "results/expression/htseq/{sample}_gene_counts.txt"
     params:
         refgen=config["genome"]["annotation_file"]
-    threads: 8
+    threads: 1
     log:
         "workflow/logs/htseq_expression/{sample}.log"
     benchmark:
@@ -57,7 +55,70 @@ rule htseq_expression:
         "../envs/htseq.yaml"
     shell:
         """
-        htseq-count -r pos -s yes -t exon -i gene_id --additional-attr gene_name \
-        /path/to/output/{sample}_Aligned.toTranscriptome.out.bam \
-        /path/to/genome/annotation.gtf > gene_counts.txt 2>> {log}
+        htseq-count -r pos -s reverse -t exon -i gene_id \
+        {input} {params.refgen} > {output} 2>> {log}
+        """
+# --additional-attr gene_name
+
+rule featurecounts_expression:
+    input:
+        "results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
+    output:
+        "results/expression/featurecounts/{sample}_gene_counts.tsv"
+    params:
+        refgen=config["genome"]["annotation_file"]
+    threads: 1
+    log:
+        "workflow/logs/featurecounts_expression/{sample}.log"
+    benchmark:
+        "workflow/benchmarks/featurecounts_expression/{sample}.tsv"
+    conda:
+        "../envs/featurecounts.yaml"
+    shell:
+        """
+        featureCounts -t exon -g gene_id -s 2 -p -T {threads}\
+        -a {params.refgen} -o {output} {input} &>> {log}
+        """
+
+rule salmon_index:
+    input:
+        config["genome"]["transcriptome"]
+    output:
+        "results/expression/salmon/index"
+    params:
+        genome=config["genome"]["genome_name"]
+    threads: 1
+    log:
+        "workflow/logs/salmon_index/{params.genome}.log"
+    benchmark:
+        "workflow/benchmarks/salmon_index/{params.genome}.tsv"
+    conda:
+        "../envs/salmon.yaml"
+    shell:
+        """
+        salmon index -t {input} -i {output} -p {threads}
+        """
+
+rule salmon_expression:
+    input:
+        "results/preprocessed/{sample}_R1.trimmed.fastq.gz",
+        "results/preprocessed/{sample}_R2.trimmed.fastq.gz",
+        "results/expression/salmon/index"
+    output:
+        "results/expression/salmon/{sample}/quant.sf"
+    params:
+        outdir="results/expression/salmon/{sample}"
+        library="ISR"
+    threads: 8
+    log:
+        "workflow/logs/salmon_expression/{sample}.log"
+    benchmark:
+        "workflow/benchmarks/salmon_expression/{sample}.tsv"
+    conda:
+        "../envs/salmon.yaml"
+    shell:
+        """
+        salmon quant -i {input[2]} -l {params.library} \
+        -1 {input[0]} -2 {input[1]} \
+        -p {threads} -o {params.outdir}
         """
