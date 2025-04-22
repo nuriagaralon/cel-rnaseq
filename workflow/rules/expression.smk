@@ -10,7 +10,7 @@ rule stringtie_expression:
     log:
         "workflow/logs/stringtie_expression/{sample}.log"
     benchmark:
-        "workflow/benchmarks/stringtie_expression/{sample}.tsv"
+        repeat("workflow/benchmarks/stringtie_expression/{sample}.tsv", 3)
     conda:
         "../envs/stringtie.yaml"
     shell:
@@ -31,7 +31,7 @@ rule stringtie_quality:
     log:
         "workflow/logs/stringtie_quality/{sample}.log"
     benchmark:
-        "workflow/benchmarks/stringtie_quality/{sample}.tsv"
+        repeat("workflow/benchmarks/stringtie_quality/{sample}.tsv", 3)
     conda:
         "../envs/stringtie.yaml"
     shell:
@@ -50,7 +50,7 @@ rule htseq_expression:
     log:
         "workflow/logs/htseq_expression/{sample}.log"
     benchmark:
-        "workflow/benchmarks/htseq_expression/{sample}.tsv"
+        repeat("workflow/benchmarks/htseq_expression/{sample}.tsv", 3)
     conda:
         "../envs/htseq.yaml"
     shell:
@@ -71,7 +71,7 @@ rule featurecounts_expression:
     log:
         "workflow/logs/featurecounts_expression/{sample}.log"
     benchmark:
-        "workflow/benchmarks/featurecounts_expression/{sample}.tsv"
+        repeat("workflow/benchmarks/featurecounts_expression/{sample}.tsv", 3)
     conda:
         "../envs/featurecounts.yaml"
     shell:
@@ -91,7 +91,7 @@ rule salmon_index:
     log:
         "workflow/logs/salmon_index/{params.genome}.log"
     benchmark:
-        "workflow/benchmarks/salmon_index/{params.genome}.tsv"
+        repeat("workflow/benchmarks/salmon_index/{params.genome}.tsv", 3)
     conda:
         "../envs/salmon.yaml"
     shell:
@@ -113,7 +113,7 @@ rule salmon_expression:
     log:
         "workflow/logs/salmon_expression/{sample}.log"
     benchmark:
-        "workflow/benchmarks/salmon_expression/{sample}.tsv"
+        repeat("workflow/benchmarks/salmon_expression/{sample}.tsv", 3)
     conda:
         "../envs/salmon.yaml"
     shell:

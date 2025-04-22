@@ -22,7 +22,7 @@ rule trimmomatic_trim:
     log:
         "workflow/logs/trimmomatic_trim/{sample}.log"
     benchmark:
-        "workflow/benchmarks/trimmomatic_trim/{sample}.tsv"
+        repeat("workflow/benchmarks/trimmomatic_trim/{sample}.tsv", 3)
     conda:
         "../envs/trimmomatic.yaml"
     shell:
@@ -54,7 +54,7 @@ rule trim_join_SE:
     log:
         "workflow/logs/trim_join_SE/{sample}.log"
     benchmark:
-        "workflow/benchmarks/trim_join_SE/{sample}.tsv"    
+        repeat("workflow/benchmarks/trim_join_SE/{sample}.tsv", 3)    
     shell:
         "cat {input[0]} {input[1]} > {output} 2>> {log}"
 
@@ -78,7 +78,7 @@ rule trimgalore_trim:
     log:
         "workflow/logs/trimgalore_trim/{sample}.log"
     benchmark:
-        "workflow/benchmarks/trimgalore_trim/{sample}.tsv"
+        repeat("workflow/benchmarks/trimgalore_trim/{sample}.tsv", 3)
     conda:
         "../envs/trimgalore.yaml"
     shell:

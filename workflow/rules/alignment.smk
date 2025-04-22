@@ -9,7 +9,7 @@ rule hisat2_index:
     log:
         "workflow/logs/hisat2_index/{genome}.log"
     benchmark:
-        "workflow/benchmarks/hisat2_index/{genome}.tsv"
+        repeat("workflow/benchmarks/hisat2_index/{genome}.tsv", 3)
     conda:
         "../envs/hisat.yaml"
     shell:
@@ -32,7 +32,7 @@ rule hisat2_align:
     log:
         "workflow/logs/hisat2_align/{sample}.log"
     benchmark:
-        "workflow/benchmarks/hisat2_align/{sample}.tsv"
+        repeat("workflow/benchmarks/hisat2_align/{sample}.tsv", 3)
     conda:
         "../envs/hisat.yaml"
     shell:
@@ -60,7 +60,7 @@ rule star_index:
     log:
         "workflow/logs/star_index/{params.genome}.log"
     benchmark:
-        "workflow/benchmarks/star_index/{params.genome}.tsv"
+        repeat("workflow/benchmarks/star_index/{params.genome}.tsv", 3)
     conda:
         "../envs/star.yaml"
     shell:
@@ -90,7 +90,7 @@ rule star_align:
     log:
         "workflow/logs/star_align/{sample}.log"
     benchmark:
-        "workflow/benchmarks/star_align/{sample}.tsv"
+        repeat("workflow/benchmarks/star_align/{sample}.tsv", 3)
     conda:
         "../envs/star.yaml"
     shell:
