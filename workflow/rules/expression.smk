@@ -107,7 +107,7 @@ rule salmon_expression:
     output:
         "results/expression/salmon/{sample}/quant.sf"
     params:
-        outdir="results/expression/salmon/{sample}"
+        outdir="results/expression/salmon/{sample}",
         library="ISR"
     threads: 8
     log:
