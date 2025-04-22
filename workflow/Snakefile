@@ -19,7 +19,12 @@ rule all:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
         "results/read_quality/QC_trimmed/qcreport_trimmed.html",
-        expand("results/expression/{sample}/compare.stats", sample=config['samples'])
+        expand("results/expression/{sample}/compare.stats", sample=config['samples']),
+        expand("results/preprocessed/{sample}_val_1.fq.gz", sample=config['samples']),
+        expand("results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam", sample=config['samples']),
+        expand("results/expression/htseq/{sample}_gene_counts.txt", sample=config['samples']),
+        expand("results/expression/featurecounts/{sample}_gene_counts.tsv", sample=config['samples']),
+        expand("results/expression/salmon/{sample}/quant.sf", sample=config['samples'])
 
 rule all_qc:
     input:
@@ -33,6 +38,26 @@ rule all_align:
 rule all_expression:
     input:
         expand("results/expression/{sample}/compare.stats", sample=config['samples'])
+
+rule trimgalore_bench:
+    input: 
+        expand("results/preprocessed/{sample}_val_1.fq.gz", sample=config['samples'])
+
+rule star_bench:
+    input:
+        expand("results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam", sample=config['samples'])
+
+rule htseq_bench:
+    input:
+        expand("results/expression/htseq/{sample}_gene_counts.txt", sample=config['samples'])
+
+rule featurecounts_bench:
+    input:
+        expand("results/expression/featurecounts/{sample}_gene_counts.tsv", sample=config['samples'])
+
+rule salmon_bench:
+    input:
+        expand("results/expression/salmon/{sample}/quant.sf", sample=config['samples'])
 
 #rule all_dge_analysis:
 
