@@ -43,6 +43,7 @@ rule hisat2_align:
         """
 #--summary-file {output.sum} --met-file {output.met}
 
+genome_name = config["genome"]["genome_name"]
 
 rule star_index:
     input:
@@ -50,7 +51,8 @@ rule star_index:
         config["genome"]["annotation_file"]
     output:
         "results/alignment/star_index/Genome",
-        "results/alignment/star_index/"
+        "results/alignment/star_index/SA",
+        "results/alignment/star_index/SAindex"
     params:
         genome=config["genome"]["genome_name"],
         overhang=100,
@@ -58,9 +60,9 @@ rule star_index:
         SAindexNbases=12 #for a 100Mb genome, 2.2.5 manual
     threads: 16
     log:
-        "workflow/logs/star_index/{params.genome}.log"
+        "workflow/logs/star_index/{genome_name}.log"
     benchmark:
-        repeat("workflow/benchmarks/star_index/{params.genome}.tsv", 3)
+        repeat("workflow/benchmarks/star_index/{genome_name}.tsv", 3)
     conda:
         "../envs/star.yaml"
     shell:

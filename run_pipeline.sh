@@ -10,3 +10,5 @@ snakemake --rulegraph | dot -T svg > images/rulegraph.svg
 snakemake -np all
 snakemake -p --use-conda --cores 8 all_qc
 snakemake -p --use-conda --conda-frontend conda --cores 8 all_qc
+
+snakemake -p --use-conda --conda-frontend conda --cores 8 --forceall --rerun-incomplete all
