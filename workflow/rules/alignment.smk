@@ -43,26 +43,21 @@ rule hisat2_align:
         """
 #--summary-file {output.sum} --met-file {output.met}
 
-genome_name = config["genome"]["genome_name"]
-
 rule star_index:
     input:
         config["genome"]["genome_file"],
         config["genome"]["annotation_file"]
     output:
-        "results/alignment/star_index/Genome",
-        "results/alignment/star_index/SA",
-        "results/alignment/star_index/SAindex"
+        expand("results/alignment/star_index/{{genome}}/{file}", file=["Genome", "SA", "SAindex"])
     params:
-        genome=config["genome"]["genome_name"],
         overhang=100,
         outdir="results/alignment/star_index",
         SAindexNbases=12 #for a 100Mb genome, 2.2.5 manual
     threads: 16
     log:
-        "workflow/logs/star_index/{genome_name}.log"
+        "workflow/logs/star_index/{genome}.log"
     benchmark:
-        repeat("workflow/benchmarks/star_index/{genome_name}.tsv", 3)
+        repeat("workflow/benchmarks/star_index/{genome}.tsv", 3)
     conda:
         "../envs/star.yaml"
     shell:
@@ -81,12 +76,12 @@ rule star_align:
     input:
         "results/preprocessed/{sample}_R1.trimmed.fastq.gz",
         "results/preprocessed/{sample}_R2.trimmed.fastq.gz",
-        "results/alignment/star_index/Genome"
+        f"results/alignment/star_index/{config['genome']["genome_name"]}/Genome"
     output:
         "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
         "results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
     params:
-        index="results/alignment/star_index/",
+        index=f"results/alignment/star_index/{config['genome']["genome_name"]}",
         outpref="results/alignment/star/{sample}_"
     threads: 8
     log:

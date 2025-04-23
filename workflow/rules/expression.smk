@@ -84,26 +84,24 @@ rule salmon_index:
     input:
         config["genome"]["transcriptome"]
     output:
-        "results/expression/salmon/index"
-    params:
-        genome=config["genome"]["genome_name"]
+        directory("results/expression/salmon/{genome}_index")
     threads: 1
     log:
-        "workflow/logs/salmon_index/{params.genome}.log"
+        "workflow/logs/salmon_index/{genome}.log"
     benchmark:
-        repeat("workflow/benchmarks/salmon_index/{params.genome}.tsv", 3)
+        repeat("workflow/benchmarks/salmon_index/{genome}.tsv", 3)
     conda:
         "../envs/salmon.yaml"
     shell:
         """
-        salmon index -t {input} -i {output} -p {threads}
+        salmon index -t {input} -i {output} -p {threads} &>> {log}
         """
 
 rule salmon_expression:
     input:
         "results/preprocessed/{sample}_R1.trimmed.fastq.gz",
         "results/preprocessed/{sample}_R2.trimmed.fastq.gz",
-        "results/expression/salmon/index"
+        f"results/expression/salmon/{config['genome']["genome_name"]}_index"
     output:
         "results/expression/salmon/{sample}/quant.sf"
     params:
@@ -120,5 +118,5 @@ rule salmon_expression:
         """
         salmon quant -i {input[2]} -l {params.library} \
         -1 {input[0]} -2 {input[1]} \
-        -p {threads} -o {params.outdir}
+        -p {threads} -o {params.outdir} &>> {log}
         """

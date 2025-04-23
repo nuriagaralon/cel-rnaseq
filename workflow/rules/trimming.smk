@@ -83,7 +83,7 @@ rule trimgalore_trim:
         "../envs/trimgalore.yaml"
     shell:
         """
-        trim_galore {params.adapters} {params.paired}\
+        trim_galore {params.adapters} {params.paired} --basename {wildcards.sample}\
         -q {params.quality} --stringency {params.stringency} --length {params.minlen} \
         --cores {threads} -o {params.outdir} {input[0]} {input[1]} &>> {log}
         """
