@@ -4,6 +4,8 @@ import time
 import os
 import csv
 
+sample_names=list(config['samples'].keys())
+
 include:
     "rules/qc.smk"
 include:
@@ -15,14 +17,10 @@ include:
 #include:
 #    "rules/dge_analysis.smk"
 
-sample_names=list(config['samples'].keys())
-
-print(sample_names)
-
 rule all:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
-        "results/read_quality/QC_trimmed/qcreport_trimmed.html",
+#        "results/read_quality/QC_trimmed/qcreport_trimmed.html",
         expand("results/expression/{sample}/compare.stats", sample=sample_names),
         expand("results/preprocessed/{sample}_val_1.fq.gz", sample=sample_names),
         expand("results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam", sample=sample_names),
@@ -47,22 +45,13 @@ rule alignment_bench:
 
 rule expression_bench:
     input:
-        expand("results/expression/{sample}/compare.stats", sample=sample_names),
+#        expand("results/expression/{sample}/compare.stats", sample=sample_names),
         expand("results/expression/htseq/{sample}_gene_counts.txt", sample=sample_names),
         expand("results/expression/featurecounts/{sample}_gene_counts.tsv", sample=sample_names),
         expand("results/expression/salmon/{sample}/quant.sf", sample=sample_names)
 
 #rule all_dge_analysis:
 
-
-'''
-What to do when benchmarking and running alternative tools?
-- Multiple rule alls: rename to all_macrogen when doing another pipeline, then get other all_star, etc.
-- Each rules file has more than one option, so do it one by one to check.
-The problem is that each tool should be tested one by one, maybe, but to not forget it. 
-- But maybe hisat+bowtie is better than star+whatever, even if star better than bowtie.
-Think on how to do it.
-'''
 def compile_benchmarks(benchmark_fp: str, stats_fp: str):
     """Aggregate all the benchmark files into one and put it in stats_fp. Modified from Ulthran (ctbushman@gmail.com) on Github"""
     benchmarks = []
@@ -92,7 +81,8 @@ def compile_benchmarks(benchmark_fp: str, stats_fp: str):
             with open(fp, "r") as g:
                 reader = csv.reader(g, delimiter="\t")
                 next(reader)  # Headers line
-                writer.writerow([fp[20:-4]] + next(reader))
+                for row in reader:
+                    writer.writerow([fp[20:-4]] + row)
     print(f"Benchmarks aggregated at {stats_file}")
 
 

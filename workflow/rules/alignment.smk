@@ -51,7 +51,7 @@ rule star_index:
         expand("results/alignment/star_index/{{genome}}/{file}", file=["Genome", "SA", "SAindex"])
     params:
         overhang=100,
-        outdir="results/alignment/star_index",
+        outdir="results/alignment/star_index/{genome}",
         SAindexNbases=12 #for a 100Mb genome, 2.2.5 manual
     threads: 16
     log:

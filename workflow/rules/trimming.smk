@@ -63,9 +63,9 @@ rule trimgalore_trim:
         expand("raw_data/samples/{{sample}}_{pr}.fastq.gz", pr=config['pairedreads'])
     output:
         "results/preprocessed/{sample}_val_1.fq.gz",
-        temp("results/preprocessed/{sample}_unpaired_1.fq.gz"),
+        temp("results/preprocessed/{sample}_R1_unpaired_1.fq.gz"),
         "results/preprocessed/{sample}_val_2.fq.gz",
-        temp("results/preprocessed/{sample}_unpaired_2.fq.gz")
+        temp("results/preprocessed/{sample}_R2_unpaired_2.fq.gz")
     params:
         adapters="--illumina",
         paired="--paired --retain_unpaired",
