@@ -12,3 +12,5 @@ snakemake -p --use-conda --cores 8 all_qc
 snakemake -p --use-conda --conda-frontend conda --cores 8 all_qc
 
 snakemake -p --use-conda --conda-frontend conda --cores 8 --forceall --rerun-incomplete all
+
+snakemake -p --use-conda --conda-frontend conda --cores 16 --rerun-incomplete trim_bench
