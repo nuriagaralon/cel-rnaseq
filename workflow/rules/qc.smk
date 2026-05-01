@@ -9,7 +9,7 @@ rule fastqc_raw:
     log:
         "workflow/logs/fastqc_raw/{sample_pr}.log"
     benchmark: 
-        "workflow/benchmarks/fastqc_raw/{sample_pr}.tsv"
+        repeat("workflow/benchmarks/fastqc_raw/{sample_pr}.tsv", 3)
     conda:
         "../envs/qc.yaml"
     shell:
@@ -20,16 +20,17 @@ rule fastqc_raw:
 
 rule multiqc_raw:
     input:
-        expand("results/read_quality/QC_raw/fastqc/{sample}_{pr}_fastqc.zip", sample=config['samples'], pr=config['pairedreads'])
+        expand("results/read_quality/QC_raw/fastqc/{sample}_{pr}_fastqc.zip", sample=sample_names, pr=config['pairedreads'])
     output:
-        "results/read_quality/QC_raw/qcreport_raw.html"
+        "results/read_quality/QC_raw/qcreport_raw.html",
+        directory("results/read_quality/QC_trimmed/qcreport_raw_data")
     params:
         outdir="results/read_quality/QC_raw"
     threads: 1
     log:
         "workflow/logs/multiqc_raw/multiqc.log"
     benchmark:
-        "workflow/benchmarks/multiqc_raw/multiqc.tsv"
+        repeat("workflow/benchmarks/multiqc_raw/multiqc.tsv", 3)
     conda:
         "../envs/qc.yaml"
     shell:
@@ -49,7 +50,7 @@ rule fastqc_trimmed:
     log:
         "workflow/logs/fastqc_trimmed/{sample}_{type}.log"
     benchmark: 
-        "workflow/benchmarks/fastqc_trimmed/{sample}_{type}.tsv"
+        repeat("workflow/benchmarks/fastqc_trimmed/{sample}_{type}.tsv", 3)
     conda:
         "../envs/qc.yaml"
     shell:
@@ -61,16 +62,17 @@ MULTIFR = ["R1", "R2", "SE"]
 
 rule multiqc_trimmed:
     input:
-        expand("results/read_quality/QC_trimmed/fastqc/{sample}_{pr}.trimmed_fastqc.zip", sample=config['samples'], pr=MULTIFR) 
+        expand("results/read_quality/QC_trimmed/fastqc/{sample}_{pr}.trimmed_fastqc.zip", sample=sample_names, pr=MULTIFR) 
     output:
-        "results/read_quality/QC_trimmed/qcreport_trimmed.html"
+        "results/read_quality/QC_trimmed/qcreport_trimmed.html",
+        directory("results/read_quality/QC_trimmed/qcreport_trimmed_data")
     params:
         outdir="results/read_quality/QC_trimmed"
     threads: 1
     log:
         "workflow/logs/multiqc_trimmed/multiqc.log"
     benchmark:
-        "workflow/benchmarks/multiqc_trimmed/multiqc.tsv"
+        repeat("workflow/benchmarks/multiqc_trimmed/multiqc.tsv", 3)
     conda:
         "../envs/qc.yaml"
     shell:
