@@ -1,6 +1,9 @@
 .snakemake
 raw_data/samples/*
-raw_data/references/*
+raw_data/references/GCF_000002985.6_WBcel235_genomic.fna
+raw_data/references/GCF_000002985.6_WBcel235_genomic.gtf
+raw_data/references/GCF_000002985.6_WBcel235_rna.fna
+raw_data/references/GCF_000002985.6_WBcel235_clean.gtf
 raw_data/SampleMetadata.txt
 workflow/logs
 workflow/benchmarks
