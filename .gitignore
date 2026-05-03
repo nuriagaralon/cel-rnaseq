@@ -1,5 +1,5 @@
 .snakemake
-raw_data/samples/*
+raw_data/samples/*.fastq.gz
 raw_data/references/GCF_000002985.6_WBcel235_genomic.fna
 raw_data/references/GCF_000002985.6_WBcel235_genomic.gtf
 raw_data/references/GCF_000002985.6_WBcel235_rna.fna

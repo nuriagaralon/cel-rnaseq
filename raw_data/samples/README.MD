@@ -1,0 +1,1 @@
+Put the RNA sequencing FASTA or FASTQ.GZ files for all samples here.
