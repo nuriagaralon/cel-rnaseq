@@ -101,7 +101,7 @@ rule salmon_expression:
     input:
         "results/preprocessed/{sample}_R1.trimmed.fastq.gz",
         "results/preprocessed/{sample}_R2.trimmed.fastq.gz",
-        f"results/expression/salmon/{config['genome']["genome_name"]}_index"
+        f"results/expression/salmon/{config['genome']['genome_name']}_index"
     output:
         "results/expression/salmon/{sample}/quant.sf"
     params:

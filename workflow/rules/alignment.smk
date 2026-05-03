@@ -27,7 +27,7 @@ rule hisat2_align:
         bambai="results/alignment/{sample}.bam.bai"
     params:
         strandness="RF",
-        index=f"results/alignment/index/{config['genome']["genome_name"]}"
+        index=f"results/alignment/index/{config['genome']['genome_name']}"
     threads: 8
     log:
         "workflow/logs/hisat2_align/{sample}.log"
@@ -76,12 +76,12 @@ rule star_align:
     input:
         "results/preprocessed/{sample}_R1.trimmed.fastq.gz",
         "results/preprocessed/{sample}_R2.trimmed.fastq.gz",
-        f"results/alignment/star_index/{config['genome']["genome_name"]}/Genome"
+        f"results/alignment/star_index/{config['genome']['genome_name']}/Genome"
     output:
         "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
         "results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
     params:
-        index=f"results/alignment/star_index/{config['genome']["genome_name"]}",
+        index=f"results/alignment/star_index/{config['genome']['genome_name']}",
         outpref="results/alignment/star/{sample}_"
     threads: 8
     log:
