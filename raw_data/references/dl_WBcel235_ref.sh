@@ -26,7 +26,7 @@ rm -f selected_checksums.txt
 # Unzip
 gunzip *.gz
 
-# Update gtf file
+# Update gtf file (Code generated with ChatGPT)
 awk 'BEGIN{FS=OFS="\t"} /^#/ {print; next} !($3 ~ /^(gene|start_codon|stop_codon)$/) {
 n=$9
 gsub(/db_xref "[^"]*"; ?/,"",n)
