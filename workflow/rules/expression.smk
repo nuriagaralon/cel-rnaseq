@@ -128,7 +128,7 @@ rule salmon_amode_expression:
         "results/expression/salmon_amode/{sample}/quant.sf"
     params:
         outdir="results/expression/salmon_amode/{sample}",
-        library="ISR"
+        library="ISR",
         reftrans=config["genome"]["transcriptome"]
     threads: 8
     log:
