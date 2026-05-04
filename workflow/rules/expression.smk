@@ -123,7 +123,7 @@ rule salmon_expression:
 
 rule salmon_amode_expression:
     input:
-        "results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
+        "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam"
     output:
         "results/expression/salmon_amode/{sample}/quant.sf"
     params:
