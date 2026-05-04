@@ -120,3 +120,25 @@ rule salmon_expression:
         -1 {input[0]} -2 {input[1]} \
         -p {threads} -o {params.outdir} &>> {log}
         """
+
+rule salmon_amode_expression:
+    input:
+        "results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
+    output:
+        "results/expression/salmon_amode/{sample}/quant.sf"
+    params:
+        outdir="results/expression/salmon_amode/{sample}",
+        library="ISR"
+        reftrans=config["genome"]["transcriptome"]
+    threads: 8
+    log:
+        "workflow/logs/salmon_amode_expression/{sample}.log"
+    benchmark:
+        repeat("workflow/benchmarks/salmon_amode_expression/{sample}.tsv", 3)
+    conda:
+        "../envs/salmon.yaml"
+    shell:
+        """
+        salmon quant -t {params.reftrans} -l {params.library} \
+        -a {input} -p {threads} -o {params.outdir} &>> {log}
+        """
