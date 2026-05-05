@@ -27,10 +27,12 @@ rule all:
         expand("results/expression/featurecounts/{sample}_gene_counts.tsv", sample=sample_names),
         expand("results/expression/salmon/{sample}/quant.sf", sample=sample_names)
 
-rule all_trim_qc:
+rule all_qc:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
-        "results/read_quality/QC_trimmed/qcreport_trimmed.html",
+        "results/read_quality/QC_trimmed/qcreport_trimmed.html"
+
+rule all_trim:
         expand("results/preprocessed/{sample}_R1.trimmed.fastq.gz", sample=sample_names)
 
 rule salmon_amode_bench:
