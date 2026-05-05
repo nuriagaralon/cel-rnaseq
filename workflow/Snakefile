@@ -30,7 +30,7 @@ rule all:
 rule all_trim_qc:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
-        "results/read_quality/QC_trimmed/qcreport_trimmed.html"
+        "results/read_quality/QC_trimmed/qcreport_trimmed.html",
         expand("results/preprocessed/{sample}_R1.trimmed.fastq.gz", sample=sample_names)
 
 rule salmon_amode_bench:
