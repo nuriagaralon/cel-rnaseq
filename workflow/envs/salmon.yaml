@@ -1,4 +1,4 @@
-name: cel-stringtie
+name: cel-salmon
 channels:
   - conda-forge
   - bioconda

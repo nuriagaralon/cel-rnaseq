@@ -1,6 +1,6 @@
-name: cel-featurecounts
+name: cel-gffread
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - subread =2.0.8
+  - gffread =0.12.9
