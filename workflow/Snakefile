@@ -34,7 +34,8 @@ rule all_qc:
 
 rule all_trim:
     input:
-        expand("results/preprocessed/{sample}_R1.trimmed.fastq.gz", sample=sample_names)
+        expand("results/preprocessed/{sample}_R1.trimmed.fastq.gz", sample=sample_names),
+        expand("results/preprocessed/{sample}_SE.trimmed.fastq.gz", sample=sample_names)
 
 rule salmon_amode_bench:
     input:
