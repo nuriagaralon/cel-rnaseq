@@ -131,7 +131,7 @@ rule salmon_transcriptome:
     log:
         "workflow/logs/salmon_transcriptome/{genome}_salmon_transcriptome.log"
     benchmark:
-        repeat("workflow/benchmarks/salmon_amode_expression/{genome}_salmon_transcriptome.tsv", 3)
+        repeat("workflow/benchmarks/salmon_transcriptome/{genome}_salmon_transcriptome.tsv", 3)
     conda:
         "../envs/gffread.yaml"
     shell:
