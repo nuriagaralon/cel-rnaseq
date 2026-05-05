@@ -22,8 +22,7 @@ rule multiqc_raw:
     input:
         expand("results/read_quality/QC_raw/fastqc/{sample}_{pr}_fastqc.zip", sample=sample_names, pr=config['pairedreads'])
     output:
-        "results/read_quality/QC_raw/qcreport_raw.html",
-        directory("results/read_quality/QC_trimmed/qcreport_raw_data")
+        "results/read_quality/QC_raw/qcreport_raw.html"
     params:
         outdir="results/read_quality/QC_raw"
     threads: 1
@@ -64,8 +63,7 @@ rule multiqc_trimmed:
     input:
         expand("results/read_quality/QC_trimmed/fastqc/{sample}_{pr}.trimmed_fastqc.zip", sample=sample_names, pr=MULTIFR) 
     output:
-        "results/read_quality/QC_trimmed/qcreport_trimmed.html",
-        directory("results/read_quality/QC_trimmed/qcreport_trimmed_data")
+        "results/read_quality/QC_trimmed/qcreport_trimmed.html"
     params:
         outdir="results/read_quality/QC_trimmed"
     threads: 1
