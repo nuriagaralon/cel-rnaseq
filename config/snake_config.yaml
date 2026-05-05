@@ -1,18 +1,87 @@
-tools:
-  trim: trimmomatic
-#  trim: trimgalore
-  map: hisat2
-#  map: STAR
-  expr: stringtie
-#  expr: HTseq
-
 samples:
+  Exp_1_1:
+    - raw_data/samples/Exp_1_1_1.fastq.gz
+    - raw_data/samples/Exp_1_1_2.fastq.gz
+  Exp_1_2:
+    - raw_data/samples/Exp_1_2_1.fastq.gz
+    - raw_data/samples/Exp_1_2_2.fastq.gz
+  Exp_1_3:
+    - raw_data/samples/Exp_1_3_1.fastq.gz
+    - raw_data/samples/Exp_1_3_2.fastq.gz
+  Exp_2_1:
+    - raw_data/samples/Exp_2_1_1.fastq.gz
+    - raw_data/samples/Exp_2_1_2.fastq.gz
+  Exp_2_2:
+    - raw_data/samples/Exp_2_2_1.fastq.gz
+    - raw_data/samples/Exp_2_2_2.fastq.gz
   Exp_2_3:
     - raw_data/samples/Exp_2_3_1.fastq.gz
     - raw_data/samples/Exp_2_3_2.fastq.gz
+  Exp_3_1:
+    - raw_data/samples/Exp_3_1_1.fastq.gz
+    - raw_data/samples/Exp_3_1_2.fastq.gz
+  Exp_3_2:
+    - raw_data/samples/Exp_3_2_1.fastq.gz
+    - raw_data/samples/Exp_3_2_2.fastq.gz
+  Exp_3_3:
+    - raw_data/samples/Exp_3_3_1.fastq.gz
+    - raw_data/samples/Exp_3_3_2.fastq.gz
+  Neg_1_1:
+    - raw_data/samples/Neg_1_1_1.fastq.gz
+    - raw_data/samples/Neg_1_1_2.fastq.gz
   Neg_1_2:
     - raw_data/samples/Neg_1_2_1.fastq.gz
     - raw_data/samples/Neg_1_2_2.fastq.gz
+  Neg_1_3:
+    - raw_data/samples/Neg_1_3_1.fastq.gz
+    - raw_data/samples/Neg_1_3_2.fastq.gz
+  Neg_2_1:
+    - raw_data/samples/Neg_2_1_1.fastq.gz
+    - raw_data/samples/Neg_2_1_2.fastq.gz
+  Neg_2_2:
+    - raw_data/samples/Neg_2_2_1.fastq.gz
+    - raw_data/samples/Neg_2_2_2.fastq.gz
+  Neg_2_3:
+    - raw_data/samples/Neg_2_3_1.fastq.gz
+    - raw_data/samples/Neg_2_3_2.fastq.gz
+  Neg_3_1:
+    - raw_data/samples/Neg_3_1_1.fastq.gz
+    - raw_data/samples/Neg_3_1_2.fastq.gz
+  Neg_3_2:
+    - raw_data/samples/Neg_3_2_1.fastq.gz
+    - raw_data/samples/Neg_3_2_2.fastq.gz
+  Neg_3_3:
+    - raw_data/samples/Neg_3_3_1.fastq.gz
+    - raw_data/samples/Neg_3_3_2.fastq.gz
+  Sham_1_1:
+    - raw_data/samples/Sham_1_1_1.fastq.gz
+    - raw_data/samples/Sham_1_1_2.fastq.gz
+  Sham_1_2:
+    - raw_data/samples/Sham_1_2_1.fastq.gz
+    - raw_data/samples/Sham_1_2_2.fastq.gz
+  Sham_1_3:
+    - raw_data/samples/Sham_1_3_1.fastq.gz
+    - raw_data/samples/Sham_1_3_2.fastq.gz
+  Sham_2_1:
+    - raw_data/samples/Sham_2_1_1.fastq.gz
+    - raw_data/samples/Sham_2_1_2.fastq.gz
+  Sham_2_2:
+    - raw_data/samples/Sham_2_2_1.fastq.gz
+    - raw_data/samples/Sham_2_2_2.fastq.gz
+  Sham_2_3:
+    - raw_data/samples/Sham_2_3_1.fastq.gz
+    - raw_data/samples/Sham_2_3_2.fastq.gz
+  Sham_3_1:
+    - raw_data/samples/Sham_3_1_1.fastq.gz
+    - raw_data/samples/Sham_3_1_2.fastq.gz
+  Sham_3_2:
+    - raw_data/samples/Sham_3_2_1.fastq.gz
+    - raw_data/samples/Sham_3_2_2.fastq.gz
+  Sham_3_3:
+    - raw_data/samples/Sham_3_3_1.fastq.gz
+    - raw_data/samples/Sham_3_3_2.fastq.gz
+
+
 pairedreads:
   - 1
   - 2

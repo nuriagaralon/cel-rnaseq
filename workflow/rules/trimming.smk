@@ -22,7 +22,7 @@ rule trimmomatic_trim:
     log:
         "workflow/logs/trimmomatic_trim/{sample}.log"
     benchmark:
-        repeat("workflow/benchmarks/trimmomatic_trim/{sample}.tsv", 3)
+        "workflow/benchmarks/trimmomatic_trim/{sample}.tsv"
     conda:
         "../envs/trimmomatic.yaml"
     shell:
@@ -57,33 +57,3 @@ rule trim_join_SE:
         repeat("workflow/benchmarks/trim_join_SE/{sample}.tsv", 3)    
     shell:
         "cat {input[0]} {input[1]} > {output} 2>> {log}"
-
-rule trimgalore_trim:
-    input:
-        expand("raw_data/samples/{{sample}}_{pr}.fastq.gz", pr=config['pairedreads'])
-    output:
-        "results/preprocessed/{sample}_val_1.fq.gz",
-        temp("results/preprocessed/{sample}_R1_unpaired_1.fq.gz"),
-        "results/preprocessed/{sample}_val_2.fq.gz",
-        temp("results/preprocessed/{sample}_R2_unpaired_2.fq.gz")
-    params:
-        adapters="--illumina",
-        paired="--paired --retain_unpaired",
-        quality=config["trimming"]["quality"],
-        stringency=config["trimming"]["adaptlen"],
-        minlen=config["trimming"]["minlen"],
-        outdir="results/preprocessed"
-    threads: 1
-# Cores are odd for trimgalore: check --help -j/--cores
-    log:
-        "workflow/logs/trimgalore_trim/{sample}.log"
-    benchmark:
-        repeat("workflow/benchmarks/trimgalore_trim/{sample}.tsv", 3)
-    conda:
-        "../envs/trimgalore.yaml"
-    shell:
-        """
-        trim_galore {params.adapters} {params.paired} --basename {wildcards.sample}\
-        -q {params.quality} --stringency {params.stringency} --length {params.minlen} \
-        --cores {threads} -o {params.outdir} {input[0]} {input[1]} &>> {log}
-        """
