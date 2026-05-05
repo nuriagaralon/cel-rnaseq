@@ -9,7 +9,7 @@ rule fastqc_raw:
     log:
         "workflow/logs/fastqc_raw/{sample_pr}.log"
     benchmark: 
-        repeat("workflow/benchmarks/fastqc_raw/{sample_pr}.tsv", 3)
+        "workflow/benchmarks/fastqc_raw/{sample_pr}.tsv"
     conda:
         "../envs/qc.yaml"
     shell:
@@ -30,7 +30,7 @@ rule multiqc_raw:
     log:
         "workflow/logs/multiqc_raw/multiqc.log"
     benchmark:
-        repeat("workflow/benchmarks/multiqc_raw/multiqc.tsv", 3)
+        "workflow/benchmarks/multiqc_raw/multiqc.tsv"
     conda:
         "../envs/qc.yaml"
     shell:
@@ -50,7 +50,7 @@ rule fastqc_trimmed:
     log:
         "workflow/logs/fastqc_trimmed/{sample}_{type}.log"
     benchmark: 
-        repeat("workflow/benchmarks/fastqc_trimmed/{sample}_{type}.tsv", 3)
+        "workflow/benchmarks/fastqc_trimmed/{sample}_{type}.tsv"
     conda:
         "../envs/qc.yaml"
     shell:
@@ -72,7 +72,7 @@ rule multiqc_trimmed:
     log:
         "workflow/logs/multiqc_trimmed/multiqc.log"
     benchmark:
-        repeat("workflow/benchmarks/multiqc_trimmed/multiqc.tsv", 3)
+        "workflow/benchmarks/multiqc_trimmed/multiqc.tsv"
     conda:
         "../envs/qc.yaml"
     shell:

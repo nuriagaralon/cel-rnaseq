@@ -32,6 +32,10 @@ rule all_qc:
         "results/read_quality/QC_raw/qcreport_raw.html",
         "results/read_quality/QC_trimmed/qcreport_trimmed.html"
 
+rule all_qc_raw:
+    input:
+        "results/read_quality/QC_raw/qcreport_raw.html"
+
 rule all_trim:
     input:
         expand("results/preprocessed/{sample}_R1.trimmed.fastq.gz", sample=sample_names),
