@@ -21,7 +21,7 @@ benchmarks <- benchmarks |> drop_na() |> filter(cpu_time>1) |> group_by(rule) |>
 
 benchmarks$category <- factor(
   benchmarks$category,
-  levels = c("QC", "Expression", "Alignment", "Trimming")
+  levels = c("QC", "Trimming", "Alignment", "Expression")
 )
 
 # Plot
