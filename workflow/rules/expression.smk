@@ -184,7 +184,8 @@ rule rsem_reference:
 
 rule rsem_expression:
     input:
-        "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam"
+        "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
+        f"results/expression/rsem/{config['genome']['genome_name']}_rsem_reference.transcripts.fa"
     output:
         "results/expression/rsem/{sample}.genes.results",
         "results/expression/rsem/{sample}.isoforms.results"
@@ -201,5 +202,5 @@ rule rsem_expression:
     shell:
         """
         rsem-calculate-expression --paired-end --strandedness reverse -p {threads} \
-            --no-bam-output --alignments {input} {params.reference} {params.prefix} &>> {log}
+            --no-bam-output --alignments {input[0]} {params.reference} {params.prefix} &>> {log}
         """
