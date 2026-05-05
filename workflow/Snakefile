@@ -28,6 +28,12 @@ rule all:
         expand("results/expression/featurecounts/{sample}_gene_counts.tsv", sample=sample_names),
         expand("results/expression/salmon/{sample}/quant.sf", sample=sample_names)
 
+rule all_rsem:
+    input:
+        expand("results/expression/rsem/{sample}.genes.results", sample=sample_names),
+        expand("results/expression/rsem/{sample}.isoforms.results", sample=sample_names)
+
+
 rule salmon_amode_bench:
     input:
         expand("results/expression/salmon_amode/{sample}/quant.sf", sample=sample_names)

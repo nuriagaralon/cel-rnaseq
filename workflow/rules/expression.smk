@@ -160,3 +160,46 @@ rule salmon_amode_expression:
         salmon quant -t {input[1]} -l {params.library} \
         -a {input[0]} -p {threads} -o {params.outdir} &>> {log}
         """
+
+rule rsem_reference:
+    input:
+        config["genome"]["genome_file"],
+        config["genome"]["annotation_file"]
+    output:
+        expand("results/expression/rsem/{{genome}}_rsem_reference.{file}", file=["grp", "ti", "transcripts.fa", "seq", "chrlist", "idx.fa", "n2g.idx.fa"])
+    params:
+        prefix="results/expression/rsem/{genome}_rsem_reference"
+    threads: 4
+    log:
+        "workflow/logs/rsem_reference/{genome}_rsem_reference.log"
+    benchmark:
+        repeat("workflow/benchmarks/rsem_reference/{genome}_rsem_reference.tsv", 3)
+    conda:
+        "../envs/rsem.yaml"
+    shell:
+        """
+        rsem-prepare-reference --gtf {input[1]} \
+            {input[0]} {params.prefix} &>> {log}
+        """
+
+rule rsem_expression:
+    input:
+        "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam"
+    output:
+        "results/expression/rsem/{sample}.genes.results",
+        "results/expression/rsem/{sample}.isoforms.results"
+    params:
+        reference=f"results/expression/rsem/{config['genome']['genome_name']}_rsem_reference",
+        prefix="results/expression/rsem/{sample}"
+    threads: 8
+    log:
+        "workflow/logs/rsem_expression/{sample}.log"
+    benchmark:
+        repeat("workflow/benchmarks/rsem_expression/{sample}.tsv", 3)
+    conda:
+        "../envs/rsem.yaml"
+    shell:
+        """
+        rsem-calculate-expression --paired-end --strandedness reverse -p {threads} \
+            --no-bam-output --alignments {input} {params.reference} {params.prefix} &>> {log}
+        """
