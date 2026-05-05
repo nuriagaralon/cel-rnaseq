@@ -147,7 +147,7 @@ rule salmon_amode_expression:
         "results/expression/salmon_amode/{sample}/quant.sf"
     params:
         outdir="results/expression/salmon_amode/{sample}",
-        library="ISR",
+        library="ISR"
     threads: 8
     log:
         "workflow/logs/salmon_amode_expression/{sample}.log"
@@ -157,6 +157,6 @@ rule salmon_amode_expression:
         "../envs/salmon.yaml"
     shell:
         """
-        salmon quant -t {params.reftrans} -l {params.library} \
-        -a {input} -p {threads} -o {params.outdir} &>> {log}
+        salmon quant -t {input[1]} -l {params.library} \
+        -a {input[0]} -p {threads} -o {params.outdir} &>> {log}
         """
