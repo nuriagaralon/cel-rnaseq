@@ -35,25 +35,16 @@ rule trimmomatic_trim:
         MINLEN:{params.minlen} &>> {log}
         """
 
-def get_join_input(wildcards):
-    if config["tools"]["trim"] == "trimmomatic":
-        return ["results/preprocessed/{wildcards.sample}_SE1.trimmed.fastq.gz",
-                "results/preprocessed/{wildcards.sample}_SE2.trimmed.fastq.gz"]
-    elif config["tools"]["trim"] == "trimgalore":
-        return ["results/preprocessed/{wildcards.sample}_unpaired_1.fq.gz",
-                "results/preprocessed/{wildcards.sample}_unpaired_2.fq.gz"]
-    else:
-        raise ValueError("Unknown trimming tool specified in the config file.")
-
 rule trim_join_SE:
     input:
-        get_join_input
+        "results/preprocessed/{sample}_SE1.trimmed.fastq.gz",
+        "results/preprocessed/{sample}_SE2.trimmed.fastq.gz"
     output:
         "results/preprocessed/{sample}_SE.trimmed.fastq.gz"
     threads: 1
     log:
         "workflow/logs/trim_join_SE/{sample}.log"
     benchmark:
-        repeat("workflow/benchmarks/trim_join_SE/{sample}.tsv", 3)    
+        "workflow/benchmarks/trim_join_SE/{sample}.tsv"  
     shell:
         "cat {input[0]} {input[1]} > {output} 2>> {log}"
