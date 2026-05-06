@@ -58,7 +58,6 @@ rule htseq_expression:
         htseq-count -r pos -s reverse -t exon -i gene_id \
         {input} {params.refgen} > {output} 2>> {log}
         """
-# --additional-attr gene_name
 
 rule featurecounts_expression:
     input:
@@ -119,46 +118,6 @@ rule salmon_expression:
         salmon quant -i {input[2]} -l {params.library} \
         -1 {input[0]} -2 {input[1]} \
         -p {threads} -o {params.outdir} &>> {log}
-        """
-
-rule salmon_transcriptome:
-    input:
-        config["genome"]["genome_file"],
-        config["genome"]["annotation_file"]
-    output:
-        "results/expression/salmon_amode/{genome}_salmon_transcriptome.fa"
-    threads: 1
-    log:
-        "workflow/logs/salmon_transcriptome/{genome}_salmon_transcriptome.log"
-    benchmark:
-        repeat("workflow/benchmarks/salmon_transcriptome/{genome}_salmon_transcriptome.tsv", 3)
-    conda:
-        "../envs/gffread.yaml"
-    shell:
-        """
-        gffread -w {output} -g {input[0]} {input[1]} &>> {log}
-        """
-
-rule salmon_amode_expression:
-    input:
-        "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
-        f"results/expression/salmon_amode/{config['genome']['genome_name']}_salmon_transcriptome.fa"
-    output:
-        "results/expression/salmon_amode/{sample}/quant.sf"
-    params:
-        outdir="results/expression/salmon_amode/{sample}",
-        library="ISR"
-    threads: 8
-    log:
-        "workflow/logs/salmon_amode_expression/{sample}.log"
-    benchmark:
-        repeat("workflow/benchmarks/salmon_amode_expression/{sample}.tsv", 3)
-    conda:
-        "../envs/salmon.yaml"
-    shell:
-        """
-        salmon quant -t {input[1]} -l {params.library} \
-        -a {input[0]} -p {threads} -o {params.outdir} &>> {log}
         """
 
 rule rsem_reference:

@@ -44,4 +44,15 @@ match(n,/gene "([^"]+)"/,gn)
 $9="transcript_id \""t[1]"\"; gene_id \""g[1]"\"; gene_name \""gn[1]"\";"
 
 print
-}' GCF_000002985.6_WBcel235_genomic.gtf > GCF_000002985.6_WBcel235_clean.gtf
+}' GCF_000002985.6_WBcel235_genomic.gtf > temp.gtf
+
+
+# Remove unassigned transcripts (required for RSEM)
+awk 'BEGIN{FS=OFS="\t"}
+/^#/ {print; next}
+
+$9 !~ /transcript_id "unassigned_transcript_/ {
+    print
+}' temp.gtf > GCF_000002985.6_WBcel235_clean.gtf
+
+rm temp.gtf
