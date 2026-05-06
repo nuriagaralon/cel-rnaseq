@@ -37,11 +37,11 @@ rule trimmomatic_trim:
 
 def get_join_input(wildcards):
     if config["tools"]["trim"] == "trimmomatic":
-        return ["results/preprocessed/{wildcards.sample}_SE1.trimmed.fastq.gz",
-                "results/preprocessed/{wildcards.sample}_SE2.trimmed.fastq.gz"]
+        return [f"results/preprocessed/{wildcards.sample}_SE1.trimmed.fastq.gz",
+                f"results/preprocessed/{wildcards.sample}_SE2.trimmed.fastq.gz"]
     elif config["tools"]["trim"] == "trimgalore":
-        return ["results/preprocessed/{wildcards.sample}_unpaired_1.fq.gz",
-                "results/preprocessed/{wildcards.sample}_unpaired_2.fq.gz"]
+        return [f"results/preprocessed/{wildcards.sample}_unpaired_1.fq.gz",
+                f"results/preprocessed/{wildcards.sample}_unpaired_2.fq.gz"]
     else:
         raise ValueError("Unknown trimming tool specified in the config file.")
 
