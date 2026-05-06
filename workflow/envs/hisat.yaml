@@ -1,8 +1,0 @@
-name: cel-hisat
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - hisat2 =2.2.1
-  - samtools =1.21
-  - sambamba =1.0.1
