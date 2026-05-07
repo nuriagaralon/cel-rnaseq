@@ -79,7 +79,7 @@ rule star_index:
         """
 
 # Align sample reads to indexed genome
-# Outputs a transcriptome BAM and sorted BAM
+# Outputs a sorted BAM and a BAM for transcript quantification
 
 rule star_align:
     input:
