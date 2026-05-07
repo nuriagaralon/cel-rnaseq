@@ -1,16 +1,21 @@
 #!/bin/bash
 
-snakemake --dag all | dot -T svg > images/general_dag.svg
-snakemake --dag all_qc | dot -T svg > images/qc_dag.svg
-snakemake --dag all_align | dot -T svg > images/align_dag.svg
-snakemake --dag all_expression | dot -T svg > images/expression_dag.svg
+# SCRIPT TO HELP RUN THE PIPELINE 
+# Activate conda
+conda activate snakemake
 
-snakemake --rulegraph | dot -T svg > images/rulegraph.svg
+# Create DAG and rulegraphs:
+snakemake all --dag | dot -T svg > images/all_dag.svg
+snakemake qc_bench --dag | dot -T svg > images/qc_dag.svg
+snakemake trim_bench --dag | dot -T svg > images/trim_dag.svg
+snakemake alignment_bench --dag | dot -T svg > images/alignment_dag.svg
+snakemake expression_bench --dag | dot -T svg > images/expression_dag.svg
 
+snakemake --rulegraph | dot -T svg > images/bench_rulegraph.svg
+
+# Dry run
 snakemake -np all
-snakemake -p --use-conda --cores 8 all_qc
-snakemake -p --use-conda --conda-frontend conda --cores 8 all_qc
 
-snakemake -p --use-conda --conda-frontend conda --cores 8 --forceall --rerun-incomplete all
-
-snakemake -p --use-conda --conda-frontend conda --cores 16 --rerun-incomplete trim_bench
+# Run pipeline
+snakemake -p --use-conda all
+#snakemake -p --use-conda --cores 8 all
