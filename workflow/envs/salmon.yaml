@@ -1,3 +1,4 @@
+# Environment for expression: Salmon 
 name: cel-salmon
 channels:
   - conda-forge

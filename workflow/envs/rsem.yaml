@@ -1,3 +1,4 @@
+# Environment for expression: RSEM
 name: cel-rsem
 channels:
   - conda-forge

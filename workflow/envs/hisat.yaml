@@ -1,3 +1,4 @@
+# Environment for alignment: HISAT2 
 name: cel-hisat
 channels:
   - conda-forge

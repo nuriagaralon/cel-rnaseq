@@ -1,3 +1,4 @@
+# Environment for expression: HTSeq
 name: cel-htseq
 channels:
   - conda-forge
