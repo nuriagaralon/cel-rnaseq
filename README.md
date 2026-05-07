@@ -98,8 +98,8 @@ cd ../..
 ```
 
 ## Running the pipeline
-[!WARNING]
-If the pipeline has been run before, make sure to clean the `results` folder to avoid pipeline crashes.
+> [!WARNING]
+> If the pipeline has been run before, make sure to clean the `results` folder to avoid pipeline crashes.
 
 ### 6. Prepare the raw reads and config metadata
 
@@ -146,16 +146,16 @@ Then, run using a specific number of cores:
 snakemake -p --use-conda --cores 8 all
 ```
 
-[!TIP]
-The jobs are usually programmed for $2^p$ cores, so 4, 8, 16 are good numbers.
+> [!TIP]
+> The jobs are usually programmed for $2^p$ cores, so 4, 8, 16 are good numbers.
 
 ### 9. Monitor Performance
 More information on the run can be found in the log file, of which the name is printed after the pipeline finishes or stops due to an error.
 
 If an error occurs, the pipeline may crash and display error messages in red text to the terminal. In many cases, Snakemake will automatically remove incomplete output files from the failed rule, so simply rerunning the same command as Step 8 may resolve temporary issues.
 
-[!TIP]
-If the pipeline gets interrupted, Snakemake can detect which jobs already finished, so rerunning `snakemake -p --use-conda all` will only rerun the necessary steps.
+> [!TIP]
+> If the pipeline gets interrupted, Snakemake can detect which jobs already finished, so rerunning `snakemake -p --use-conda all` will only rerun the necessary steps.
 
 A problem with `snake_config.yaml` would have been detected in the dry run, so failures at this stage can be: 
 
