@@ -25,11 +25,7 @@ rule all:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
         "results/read_quality/QC_trimmed/qcreport_trimmed.html",
-        expand("results/expression/{sample}/compare.stats", sample=sample_names),
-        expand("results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam", sample=sample_names),
-        expand("results/expression/htseq/{sample}_gene_counts.txt", sample=sample_names),
-        expand("results/expression/featurecounts/{sample}_gene_counts.tsv", sample=sample_names),
-        expand("results/expression/salmon/{sample}/quant.sf", sample=sample_names)
+        expand("results/expression/{sample}_gene_counts.tsv", sample=sample_names),
 
 # QC target files (includes trimming)
 rule all_qc:
