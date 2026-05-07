@@ -1,5 +1,5 @@
 # cel-rnaseq: Main Snakemake workflow
-# Production pipeline for C. elegans RNA-seq processing and analysis
+# Benchmark pipeline for C. elegans RNA-seq processing and analysis
 # GitHub repository: cel-rnaseq (GPLv3)
 # Author: Núria Garriga Alonso (nuriagaralon)
 

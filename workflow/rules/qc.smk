@@ -66,11 +66,9 @@ rule fastqc_trimmed:
 
 # Aggregate FastQC reports in one file (include Forward, reverse and unpaired reads)
 
-MULTIFR = ["R1", "R2", "SE"]
-
 rule multiqc_trimmed:
     input:
-        expand("results/read_quality/QC_trimmed/fastqc/{sample}_{pr}.trimmed_fastqc.zip", sample=sample_names, pr=MULTIFR) 
+        expand("results/read_quality/QC_trimmed/fastqc/{sample}_{pr}.trimmed_fastqc.zip", sample=sample_names, pr=config['trimqc']) 
     output:
         outfile="results/read_quality/QC_trimmed/qcreport_trimmed.html",
         outdata=directory("results/read_quality/QC_trimmed/qcreport_trimmed_data")

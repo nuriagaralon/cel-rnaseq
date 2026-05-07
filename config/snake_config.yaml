@@ -39,3 +39,11 @@ trimming:
   adaptlen: 5   # Minimum length of adapter that is trimmed
   minlen: 36    # Shorter reads are dropped
   quality: 15   # Average quality required in sliding window
+
+# What files do we want to do FastQC after trimming?
+trimqc:
+  - R1      # Trimmomatic
+  - R2      # Trimmomatic
+#  - val_1  # TrimGalore
+#  - val_2  # TrimGalore  
+#  - SE     # Remove first # if you want FastQC on unpaired reads
