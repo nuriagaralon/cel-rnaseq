@@ -1,3 +1,7 @@
+# TRIMMING USING TRIMMOMATIC
+# Trim raw read files
+# Outputs paired reads files (R1 and R2) and unpaired reads (SE)
+
 rule trimmomatic_trim:
     input:
         expand("raw_data/samples/{{sample}}_{pr}.fastq.gz", pr=config['pairedreads'])
@@ -11,13 +15,13 @@ rule trimmomatic_trim:
         seed_mismatch=2,
         palindrome_clip=30,
         simple_clip=10,
-        adapter_length=config["trimming"]["adaptlen"],
+        adapter_length=config["trimming"]["adaptlen"], 
         crop_lowq="true",
         leading=3,
         trailing=3,
         window_size=4,
         window_quality=config["trimming"]["quality"],
-        minlen=config["trimming"]["minlen"]
+        minlen=config["trimming"]["minlen"]            
     threads: 4
     log:
         "workflow/logs/trimmomatic_trim/{sample}.log"
@@ -35,7 +39,10 @@ rule trimmomatic_trim:
         MINLEN:{params.minlen} &>> {log}
         """
 
+# Combine unpaired reads from FW and RV files into one
+
 def get_join_input(wildcards):
+    """Is the trimming done with trimmomatic or trimgalore?"""
     if config["tools"]["trim"] == "trimmomatic":
         return [f"results/preprocessed/{wildcards.sample}_SE1.trimmed.fastq.gz",
                 f"results/preprocessed/{wildcards.sample}_SE2.trimmed.fastq.gz"]
@@ -57,6 +64,10 @@ rule trim_join_SE:
         repeat("workflow/benchmarks/trim_join_SE/{sample}.tsv", 3)    
     shell:
         "cat {input[0]} {input[1]} > {output} 2>> {log}"
+
+# TRIMMING USING TRIMGALORE
+# Trim raw read files
+# Outputs paired reads files (val_1 and val_2) and unpaired reads (unpaired)
 
 rule trimgalore_trim:
     input:

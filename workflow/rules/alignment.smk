@@ -1,8 +1,11 @@
+# ALIGNMENT USING HISAT2
+# Index the reference genome
+
 rule hisat2_index:
     input:
-        config["genome"]["genome_file"]
+        genome=config["genome"]["genome_file"]
     output:
-        expand("results/alignment/index/{{genome}}.{i}.ht2", i=range(1,9))
+        index=expand("results/alignment/index/{{genome}}.{i}.ht2", i=range(1,9))
     params:
         outindex="results/alignment/index/{genome}"
     threads: 16
@@ -14,14 +17,17 @@ rule hisat2_index:
         "../envs/hisat.yaml"
     shell:
         """
-        hisat2-build -p {threads} {input} {params.outindex} &>> {log}
+        hisat2-build -p {threads} {input.genome} {params.outindex} &>> {log}
         """
+
+# Align sample reads to indexed genome
+# Outputs a BAM and BAM.BAI index file
 
 rule hisat2_align:
     input:
-        "results/preprocessed/{sample}_R1.trimmed.fastq.gz",
-        "results/preprocessed/{sample}_R2.trimmed.fastq.gz",
-        expand("results/alignment/index/{genome}.{i}.ht2", genome=config["genome"]["genome_name"], i=range(1,9))
+        fwfasta="results/preprocessed/{sample}_R1.trimmed.fastq.gz",
+        rvfasta="results/preprocessed/{sample}_R2.trimmed.fastq.gz",
+        index=expand("results/alignment/index/{genome}.{i}.ht2", genome=config["genome"]["genome_name"], i=range(1,9))
     output:
         bam="results/alignment/{sample}.bam",
         bambai="results/alignment/{sample}.bam.bai"
@@ -38,17 +44,18 @@ rule hisat2_align:
     shell:
         """
         (hisat2 -p {threads} --dta --rna-strandness {params.strandness} \
-        -x {params.index} -1 {input[0]} -2 {input[1]} | samtools view -bhS | samtools sort -o {output.bam}
+        -x {params.index} -1 {input.fwfasta} -2 {input.rvfasta} | samtools view -bhS | samtools sort -o {output.bam}
         sambamba index {output.bam}) &>> {log}
         """
-#--summary-file {output.sum} --met-file {output.met}
+# ALIGNMENT USING STAR
+# Index the reference genome
 
 rule star_index:
     input:
-        config["genome"]["genome_file"],
-        config["genome"]["annotation_file"]
+        genome=config["genome"]["genome_file"],
+        gtf=config["genome"]["annotation_file"]
     output:
-        expand("results/alignment/star_index/{{genome}}/{file}", file=["Genome", "SA", "SAindex"])
+        index=expand("results/alignment/star_index/{{genome}}/{file}", file=["Genome", "SA", "SAindex"])
     params:
         overhang=100,
         outdir="results/alignment/star_index/{genome}",
@@ -63,26 +70,28 @@ rule star_index:
     shell:
         """
         STAR --runMode genomeGenerate \
-            --genomeFastaFiles {input[0]} \
-            --sjdbGTFfile  {input[1]} \
+            --genomeFastaFiles {input.genome} \
+            --sjdbGTFfile  {input.gtf} \
             --sjdbOverhang {params.overhang} \
             --runThreadN {threads} \
             --genomeSAindexNbases {params.SAindexNbases} \
             --genomeDir {params.outdir} &>> {log}
         """
 
+# Align sample reads to indexed genome
+# Outputs a transcriptome BAM and sorted BAM
 
 rule star_align:
     input:
-        "results/preprocessed/{sample}_R1.trimmed.fastq.gz",
-        "results/preprocessed/{sample}_R2.trimmed.fastq.gz",
-        f"results/alignment/star_index/{config['genome']['genome_name']}/Genome"
+        fwfasta="results/preprocessed/{sample}_R1.trimmed.fastq.gz",
+        rvfasta="results/preprocessed/{sample}_R2.trimmed.fastq.gz",
+        index=f"results/alignment/star_index/{config['genome']['genome_name']}/Genome"
     output:
-        "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
-        "results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
+        trbam="results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
+        coordbam="results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
     params:
         index=f"results/alignment/star_index/{config['genome']['genome_name']}",
-        outpref="results/alignment/star/{sample}_"
+        outprefix="results/alignment/star/{sample}_"
     threads: 8
     log:
         "workflow/logs/star_align/{sample}.log"
@@ -93,7 +102,7 @@ rule star_align:
     shell:
         """
         STAR --genomeDir {params.index} \
-            --readFilesIn {input[0]} {input[1]} \
+            --readFilesIn {input.fwfasta} {input.rvfasta} \
             --readFilesCommand zcat \
             --runThreadN {threads} \
             --outFilterType BySJout \
@@ -105,7 +114,7 @@ rule star_align:
             --alignIntronMin 20 \
             --alignIntronMax 1000000 \
             --alignMatesGapMax 1000000 \
-            --outFileNamePrefix {params.outpref} \
+            --outFileNamePrefix {params.outprefix} \
             --outSAMunmapped Within \
             --outSAMattributes NH HI AS nM \
             --outSAMtype BAM SortedByCoordinate \

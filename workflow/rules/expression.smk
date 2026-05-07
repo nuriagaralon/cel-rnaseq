@@ -1,9 +1,13 @@
+# EXPRESSION USING STRINGTIE
+# Abundance estimation from a BAM alignment
+# Outputs a gtf and an abundance matrix (no raw counts)
+
 rule stringtie_expression:
     input:
-        "results/alignment/{sample}.bam"
+        bam="results/alignment/{sample}.bam"
     output:
-        "results/expression/{sample}/{sample}.gtf",
-        "results/expression/{sample}/{sample}.gene_abund.anno.tab"
+        gtf="results/expression/{sample}/{sample}.gtf",
+        counts="results/expression/{sample}/{sample}.gene_abund.anno.tab"
     params:
         refgen=config["genome"]["annotation_file"]
     threads: 8
@@ -15,15 +19,17 @@ rule stringtie_expression:
         "../envs/stringtie.yaml"
     shell:
         """
-        stringtie {input} -p {threads} --rf -l {wildcards.sample} \
-        -o {output[0]} -G {params.refgen} -A {output[1]} -eB &>> {log}
+        stringtie {input.bam} -p {threads} --rf -l {wildcards.sample} \
+        -o {output.gtf} -G {params.refgen} -A {output.counts} -eB &>> {log}
         """
+
+# Measure stringtie accuracy
 
 rule stringtie_quality:
     input:
-        "results/expression/{sample}/{sample}.gtf"
+        gtf="results/expression/{sample}/{sample}.gtf"
     output:
-        "results/expression/{sample}/compare.stats"
+        stats="results/expression/{sample}/compare.stats"
     params:
         refgen=config["genome"]["annotation_file"],
         prefix="results/expression/{sample}/compare"
@@ -36,14 +42,18 @@ rule stringtie_quality:
         "../envs/stringtie.yaml"
     shell:
         """
-        gffcompare -R -r {params.refgen} {input} -o {params.prefix} &>> {log}
+        gffcompare -R -r {params.refgen} {input.gtf} -o {params.prefix} &>> {log}
         """
+
+# EXPRESSION USING HTSEQ
+# Abundance estimation from a BAM alignment
+# Outputs a raw count matrix
 
 rule htseq_expression:
     input:
-        "results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
+        bam="results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
     output:
-        "results/expression/htseq/{sample}_gene_counts.txt"
+        counts="results/expression/htseq/{sample}_gene_counts.txt"
     params:
         refgen=config["genome"]["annotation_file"]
     threads: 1
@@ -56,14 +66,18 @@ rule htseq_expression:
     shell:
         """
         htseq-count -r pos -s reverse -t exon -i gene_id \
-        {input} {params.refgen} > {output} 2>> {log}
+        {input.bam} {params.refgen} > {output.counts} 2>> {log}
         """
+
+# EXPRESSION USING FEATURECOUNTS
+# Abundance estimation from a BAM alignment
+# Outputs a raw count matrix
 
 rule featurecounts_expression:
     input:
-        "results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
+        bam="results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam"
     output:
-        "results/expression/featurecounts/{sample}_gene_counts.tsv"
+        counts="results/expression/featurecounts/{sample}_gene_counts.tsv"
     params:
         refgen=config["genome"]["annotation_file"]
     threads: 1
@@ -76,14 +90,17 @@ rule featurecounts_expression:
     shell:
         """
         featureCounts -t exon -g gene_id -s 2 -p -T {threads}\
-        -a {params.refgen} -o {output} {input} &>> {log}
+        -a {params.refgen} -o {output.counts} {input.bam} &>> {log}
         """
+
+# EXPRESSION USING SALMON
+# Index the reference transcriptome
 
 rule salmon_index:
     input:
-        config["genome"]["transcriptome"]
+        transcriptome=config["genome"]["transcriptome"]
     output:
-        directory("results/expression/salmon/{genome}_index")
+        tindex=directory("results/expression/salmon/{genome}_index")
     threads: 1
     log:
         "workflow/logs/salmon_index/{genome}.log"
@@ -93,16 +110,18 @@ rule salmon_index:
         "../envs/salmon.yaml"
     shell:
         """
-        salmon index -t {input} -i {output} -p {threads} &>> {log}
+        salmon index -t {input.transcriptome} -i {output.tindex} -p {threads} &>> {log}
         """
+# Abundance estimation via quasi-mapping
+# Outputs a raw count matrix
 
 rule salmon_expression:
     input:
-        "results/preprocessed/{sample}_R1.trimmed.fastq.gz",
-        "results/preprocessed/{sample}_R2.trimmed.fastq.gz",
-        f"results/expression/salmon/{config['genome']['genome_name']}_index"
+        fwfasta="results/preprocessed/{sample}_R1.trimmed.fastq.gz",
+        rvfasta="results/preprocessed/{sample}_R2.trimmed.fastq.gz",
+        index=f"results/expression/salmon/{config['genome']['genome_name']}_index"
     output:
-        "results/expression/salmon/{sample}/quant.sf"
+        counts="results/expression/salmon/{sample}/quant.sf"
     params:
         outdir="results/expression/salmon/{sample}",
         library="ISR"
@@ -120,10 +139,13 @@ rule salmon_expression:
         -p {threads} -o {params.outdir} &>> {log}
         """
 
+# EXPRESSION USING RSEM
+# Create reference from genome and annotation
+
 rule rsem_reference:
     input:
-        config["genome"]["genome_file"],
-        config["genome"]["annotation_file"]
+        genome=config["genome"]["genome_file"],
+        gtf=config["genome"]["annotation_file"]
     output:
         expand("results/expression/rsem/{{genome}}_rsem_reference.{file}", file=["grp", "ti", "transcripts.fa", "seq", "chrlist", "idx.fa", "n2g.idx.fa"])
     params:
@@ -137,17 +159,20 @@ rule rsem_reference:
         "../envs/rsem.yaml"
     shell:
         """
-        rsem-prepare-reference --gtf {input[1]} \
-            {input[0]} {params.prefix} &>> {log}
+        rsem-prepare-reference --gtf {input.gtf} \
+            {input.genome} {params.prefix} &>> {log}
         """
+
+# Abundance estimation from a BAM alignment
+# Outputs a raw count matrix of genes and transcripts
 
 rule rsem_expression:
     input:
-        "results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
-        f"results/expression/rsem/{config['genome']['genome_name']}_rsem_reference.transcripts.fa"
+        trbam="results/alignment/star/{sample}_Aligned.toTranscriptome.out.bam",
+        ref=f"results/expression/rsem/{config['genome']['genome_name']}_rsem_reference.transcripts.fa"
     output:
-        "results/expression/rsem/{sample}.genes.results",
-        "results/expression/rsem/{sample}.isoforms.results"
+        countsgen="results/expression/rsem/{sample}.genes.results",
+        countst="results/expression/rsem/{sample}.isoforms.results"
     params:
         reference=f"results/expression/rsem/{config['genome']['genome_name']}_rsem_reference",
         prefix="results/expression/rsem/{sample}"
@@ -161,5 +186,5 @@ rule rsem_expression:
     shell:
         """
         rsem-calculate-expression --paired-end --strandedness reverse -p {threads} \
-            --no-bam-output --alignments {input[0]} {params.reference} {params.prefix} &>> {log}
+            --no-bam-output --alignments {input.trbam} {params.reference} {params.prefix} &>> {log}
         """
