@@ -1,3 +1,7 @@
+# TRIMMING USING TRIMMOMATIC
+# Trim raw read files
+# Outputs paired reads files (R1 and R2) and unpaired reads (SE)
+
 rule trimmomatic_trim:
     input:
         expand("raw_data/samples/{{sample}}_{pr}.fastq.gz", pr=config['pairedreads'])
@@ -34,6 +38,8 @@ rule trimmomatic_trim:
         SLIDINGWINDOW:{params.window_size}:{params.window_quality} \
         MINLEN:{params.minlen} &>> {log}
         """
+
+# Combine unpaired reads from FW and RV files into one SE
 
 rule trim_join_SE:
     input:

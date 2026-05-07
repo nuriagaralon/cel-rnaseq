@@ -1,3 +1,4 @@
+# Environment for trimming: Trimmomatic
 name: cel-trimmomatic
 channels:
   - conda-forge

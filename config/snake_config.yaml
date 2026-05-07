@@ -1,3 +1,9 @@
+# GENERAL CONFIGURATION FILE FOR CEL-RNASEQ
+
+# List of samples in the form of:
+# sample_name:
+#   - raw_data/samples/forward_reads.fastq.gz
+#   - raw_data/samples/reverse_reads.fastq.gz
 samples:
   Exp_1_1:
     - raw_data/samples/Exp_1_1_1.fastq.gz
@@ -81,17 +87,31 @@ samples:
     - raw_data/samples/Sham_3_3_1.fastq.gz
     - raw_data/samples/Sham_3_3_2.fastq.gz
 
-
+# How does the sample file indicate paired reads?
+# e.g. Name_1.fastq.gz & Name_2.fastq.gz
+# or Name_FW.fastq.gz & Name_RV.fastq.gz
 pairedreads:
   - 1
   - 2
+
+# Reference data
 genome:
   genome_name: WBcel235
   genome_file: raw_data/references/GCF_000002985.6_WBcel235_genomic.fna
   annotation_file: raw_data/references/GCF_000002985.6_WBcel235_clean.gtf
   transcriptome: raw_data/references/GCF_000002985.6_WBcel235_rna.fna
+
+# Adapters file (from timflutre/trimmomatic Github)
 adapters: raw_data/references/TruSeq3-PE-2.fa
+
+# Trimming options
 trimming:
-  adaptlen: 5
-  minlen: 36
-  quality: 15
+  adaptlen: 5   # Minimum length of adapter that is trimmed
+  minlen: 36    # Shorter reads are dropped
+  quality: 15   # Average quality required in sliding window
+
+# What files do we want to do FastQC after trimming?
+trimqc:
+  - R1
+  - R2 
+#  - SE # Remove first # if you want FastQC on unpaired reads

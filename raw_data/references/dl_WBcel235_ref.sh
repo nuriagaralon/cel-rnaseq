@@ -1,4 +1,5 @@
 #!/bin/bash
+# SCRIPT TO DOWNLOAD, CHECK AND CLEAN REFERENCE DATA
 set -e
 
 # Download C. elegans WBcel235 reference files

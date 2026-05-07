@@ -1,3 +1,4 @@
+# Environment for expression: featureCounts
 name: cel-featurecounts
 channels:
   - conda-forge

@@ -1,3 +1,4 @@
+# General workflow environment
 name: snakemake
 channels:
   - conda-forge
