@@ -1,3 +1,8 @@
+# cel-rnaseq: Main Snakemake workflow
+# Production pipeline for C. elegans RNA-seq processing and analysis
+# GitHub repository: cel-rnaseq (GPLv3)
+# Author: Núria Garriga Alonso (nuriagaralon)
+
 configfile: "config/snake_config.yaml"
 
 import time
@@ -118,6 +123,7 @@ def compile_logs(log_fp: str, stats_fp: str):
     print(f"Logs aggregated at {stats_file}")
 
 def remove_benchmarks_and_logs(benchmark_fp: str, log_fp: str):
+    """Remove all benchmarks and logs from previous run, to not accumulate indefinitely"""
     for root, dirs, files in os.walk(log_fp):
         for file in files:
             if file.endswith(".log"):
