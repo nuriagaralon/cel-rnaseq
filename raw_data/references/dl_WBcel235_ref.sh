@@ -5,16 +5,14 @@ set -e
 # Download C. elegans WBcel235 reference files
 wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/985/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_genomic.fna.gz
 wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/985/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_genomic.gtf.gz
-wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/985/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_rna.fna.gz
 wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/985/GCF_000002985.6_WBcel235/md5checksums.txt
 
 # Checksums
-grep "WBcel235_genomic.fna\|WBcel235_genomic.gtf\|WBcel235_rna.fna"  md5checksums.txt > selected_checksums.txt
+grep "WBcel235_genomic.fna\|WBcel235_genomic.gtf"  md5checksums.txt > selected_checksums.txt
 md5sum -c selected_checksums.txt || {
     echo "ERROR: Checksum verification failed. Please download again."
     rm -f GCF_000002985.6_WBcel235_genomic.fna.gz
     rm -f GCF_000002985.6_WBcel235_genomic.gtf.gz
-    rm -f GCF_000002985.6_WBcel235_rna.fna.gz
     rm -f md5checksums.txt 
     rm -f selected_checksums.txt
     exit 1

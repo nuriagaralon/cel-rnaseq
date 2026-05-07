@@ -99,7 +99,6 @@ genome:
   genome_name: WBcel235
   genome_file: raw_data/references/GCF_000002985.6_WBcel235_genomic.fna
   annotation_file: raw_data/references/GCF_000002985.6_WBcel235_clean.gtf
-  transcriptome: raw_data/references/GCF_000002985.6_WBcel235_rna.fna
 
 # Adapters file (from timflutre/trimmomatic Github)
 adapters: raw_data/references/TruSeq3-PE-2.fa
