@@ -111,7 +111,7 @@ Edit the general config file `cel-rnaseq/config/snake_config.yaml` to include th
 
 For example, this is a snapshot of the `snake_config.yaml` file for two samples: Exp_2_3 and Neg_1_2.
 <div align="center">
-  <img src="documentation/images/2_samples.png" alt="snake_config.yaml" width="70%">
+  <img src="documentation/images/2_config.png" alt="snake_config.yaml" width="70%">
 </div>
 
 - The RNA-seq library must be a paired-reads library.
