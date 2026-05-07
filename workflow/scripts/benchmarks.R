@@ -18,7 +18,7 @@ benchmarks <- benchmarks |>
   mutate(
     category = case_when(
       str_detect(rule, "qc") ~ "QC",
-      str_detect(rule, "trim/") ~ "Trimming",
+      str_detect(rule, "trim") ~ "Trimming",
       str_detect(rule, "hisat|star") ~ "Alignment",
       str_detect(rule, "expression|salmon|stringtie|rsem") ~ "Expression"
     )
