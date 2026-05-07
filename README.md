@@ -150,6 +150,7 @@ snakemake -p --use-conda --cores 8 all
 The jobs are usually programmed for $2^p$ cores, so 4, 8, 16 are good numbers.
 
 ### 9. Monitor Performance
+More information on the run can be found in the log file, of which the name is printed after the pipeline finishes or stops due to an error.
 
 If an error occurs, the pipeline may crash and display error messages in red text to the terminal. In many cases, Snakemake will automatically remove incomplete output files from the failed rule, so simply rerunning the same command as Step 8 may resolve temporary issues.
 
@@ -170,4 +171,3 @@ A problem with `snake_config.yaml` would have been detected in the dry run, so f
 
 The **MultiQC tool** can cause issues if there is a past file in the folder: it will automatically add `_1` after the created file, and since it is not the file Snakemake is looking for, it will think the job failed. Erase the files and try again.
 
-More information of the run can be found in the logs/ and benchmarks/ folders.
