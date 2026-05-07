@@ -1,3 +1,8 @@
+# cel-rnaseq: Main Snakemake workflow
+# Production pipeline for C. elegans RNA-seq processing and analysis
+# GitHub repository: cel-rnaseq (GPLv3)
+# Author: Núria Garriga Alonso (nuriagaralon)
+
 configfile: "config/snake_config.yaml"
 
 import time
@@ -14,9 +19,8 @@ include:
     "rules/alignment.smk"
 include:
     "rules/expression.smk"
-#include:
-#    "rules/dge_analysis.smk"
 
+# Target files from all rules
 rule all:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
@@ -27,37 +31,27 @@ rule all:
         expand("results/expression/featurecounts/{sample}_gene_counts.tsv", sample=sample_names),
         expand("results/expression/salmon/{sample}/quant.sf", sample=sample_names)
 
+# QC target files (includes trimming)
 rule all_qc:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
         "results/read_quality/QC_trimmed/qcreport_trimmed.html"
 
-rule all_qc_raw:
-    input:
-        "results/read_quality/QC_raw/qcreport_raw.html"
-
+# Trimming target files
 rule all_trim:
-    input:
-        expand("results/preprocessed/{sample}_R1.trimmed.fastq.gz", sample=sample_names),
-        expand("results/preprocessed/{sample}_SE.trimmed.fastq.gz", sample=sample_names)
+    input: 
+        expand("results/preprocessed/{sample}_R1.trimmed.fastq.gz", sample=sample_names)
 
-rule salmon_amode_bench:
+# Alignment target files
+rule all_align:
     input:
-        expand("results/expression/salmon_amode/{sample}/quant.sf", sample=sample_names)
+        expand("results/alignment/{sample}_Aligned.sortedByCoord.out.bam", sample=sample_names)
 
-rule alignment_bench:
+# Expression target files
+rule all_expression:
     input:
-        expand("results/alignment/{sample}.bam", sample=sample_names),
-        expand("results/alignment/star/{sample}_Aligned.sortedByCoord.out.bam", sample=sample_names)
+        expand("results/expression/{sample}_gene_counts.tsv", sample=sample_names)
 
-rule expression_bench:
-    input:
-#        expand("results/expression/{sample}/compare.stats", sample=sample_names),
-        expand("results/expression/htseq/{sample}_gene_counts.txt", sample=sample_names),
-        expand("results/expression/featurecounts/{sample}_gene_counts.tsv", sample=sample_names),
-        expand("results/expression/salmon/{sample}/quant.sf", sample=sample_names)
-
-#rule all_dge_analysis:
 
 def compile_benchmarks(benchmark_fp: str, stats_fp: str):
     """Aggregate all the benchmark files into one and put it in stats_fp. Modified from Ulthran (ctbushman@gmail.com) on Github"""
@@ -120,6 +114,7 @@ def compile_logs(log_fp: str, stats_fp: str):
     print(f"Logs aggregated at {stats_file}")
 
 def remove_benchmarks_and_logs(benchmark_fp: str, log_fp: str):
+    """Remove all benchmarks and logs from previous run, to not accumulate indefinitely"""
     for root, dirs, files in os.walk(log_fp):
         for file in files:
             if file.endswith(".log"):
