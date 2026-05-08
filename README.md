@@ -51,8 +51,7 @@ git clone https://github.com/nuriagaralon/cel-rnaseq.git
 The pipeline used Miniforge v24.11.3, which can be downloaded with:
 
 ```
-wget
-https://github.com/conda-forge/miniforge/releases/download/24.11.3-0/Miniforge3-Linux-x86_64.sh
+wget https://github.com/conda-forge/miniforge/releases/download/24.11.3-0/Miniforge3-Linux-x86_64.sh
 ```
 
 The latest version can be downloaded with:
