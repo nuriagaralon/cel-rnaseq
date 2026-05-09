@@ -45,7 +45,7 @@ rule star_align:
     log:
         "workflow/logs/star_align/{sample}.log"
     benchmark:
-        repeat("workflow/benchmarks/star_align/{sample}.tsv", 3)
+        "workflow/benchmarks/star_align/{sample}.tsv"
     conda:
         "../envs/star.yaml"
     shell:
