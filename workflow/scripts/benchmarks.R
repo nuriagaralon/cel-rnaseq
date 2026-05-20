@@ -31,13 +31,14 @@ benchmarks$category <- factor(
 )
 
 # Plot
-ggplot(benchmarks, aes(cpu_time_mean, max_rss_mean, label = rule)) +
-  geom_point(size = 2) +
+ggplot(benchmarks_b, aes(cpu_time_mean, max_rss_mean, label = rule)) +
+  geom_point(size = 1.5) +
   geom_errorbar(aes(xmin = cpu_time_mean - cpu_time_stdev,
                     xmax = cpu_time_mean + cpu_time_stdev), orientation = "y") +
   geom_errorbar(aes(ymin = max_rss_mean - max_rss_stdev,
                     ymax = max_rss_mean + max_rss_stdev)) +
-  geom_text_repel(size = 3, max.overlaps = 50, box.padding = 0.5) +
+  geom_text_repel(size = 2.75, max.overlaps = 50, force = 10, 
+                  box.padding = 0.5, point.padding = 0.5, segment.linetype = 3) +
   labs(x = "CPU time (s)", y = "Peak RSS (MB)") +
   facet_wrap(~ category, scales = "free") +
   theme_bw()
