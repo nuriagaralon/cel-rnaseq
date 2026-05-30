@@ -7,7 +7,11 @@
 #--------------------------
 
 # Libraries
-library(tidyverse)
+library(dplyr)
+library(readr)
+library(purrr)
+library(tibble)
+library(stringr)
 
 # Feature table mapping
 features_df <- read_tsv(snakemake@input[['features']])
