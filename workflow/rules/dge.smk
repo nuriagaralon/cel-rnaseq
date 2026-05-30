@@ -16,5 +16,5 @@ rule aggregate_dge:
     conda:
         "../envs/Raggregate.yaml"
     script:
-        "workflow/scripts/dge_aggregate.R"
+        "../scripts/dge_aggregate.R"
         
