@@ -10,8 +10,7 @@
 library(tidyverse)
 
 # Feature table mapping
-#features_df <- read_tsv(snakemake@input[['features']])
-features_df <- read_tsv("raw_data/references/GCF_000002985.6_WBcel235_feature_table.txt")
+features_df <- read_tsv(snakemake@input[['features']])
 
 features_df <- features_df |>
   select(symbol, GeneID, locus_tag) |>
@@ -20,12 +19,7 @@ features_df <- features_df |>
 
 
 # Build counts dataframe
-files <- list.files(
-  "results/expression",
-  pattern = "_gene_counts.tsv$",
-  full.names = TRUE
-)
-
+files <- snakemake@input[["counts"]]
 
 count_tables <- files |>
   map(function(file){
@@ -43,8 +37,7 @@ count_df <- purrr::reduce(count_tables, full_join, by = "Geneid")
 count_df <- column_to_rownames(count_df, "Geneid")
 
 # Build metadata dataframe
-#meta_df <- read_tsv(snakemake@input[['metadata']])
-meta_df <- read_tsv("raw_data/samples/SampleMetadata.tsv")
+meta_df <- read_tsv(snakemake@input[['metadata']])
 
 # Sample list
 count_samples <- names(count_df)
@@ -72,5 +65,8 @@ if(!identical(count_samples, meta_df$Sample.ID)){
 }
 
 # Save objects
-save(list = c("count_df", "meta_df", "features_df"), file = "results/dge/data.RData")
+save(
+  list = c("count_df", "meta_df", "features_df"), 
+  file = snakemake@output[["rdata"]]
+)
 

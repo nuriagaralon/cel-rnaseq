@@ -1,5 +1,8 @@
 # GENERAL CONFIGURATION FILE FOR CEL-RNASEQ
 
+# Metadata file
+metadata: raw_data/samples/SampleMetadata.tsv
+
 # Choose trimming tool
 tools:
   trim: trimmomatic
@@ -30,6 +33,7 @@ genome:
   genome_file: raw_data/references/GCF_000002985.6_WBcel235_genomic.fna
   annotation_file: raw_data/references/GCF_000002985.6_WBcel235_clean.gtf
   transcriptome: raw_data/references/GCF_000002985.6_WBcel235_rna.fna
+  features_file: raw_data/references/GCF_000002985.6_WBcel235_feature_table.txt
 
 # Adapters file (from timflutre/trimmomatic Github)
 adapters: raw_data/references/TruSeq3-PE-2.fa

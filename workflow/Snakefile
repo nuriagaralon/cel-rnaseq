@@ -1,5 +1,5 @@
 # cel-rnaseq: Main Snakemake workflow
-# Benchmark pipeline for C. elegans RNA-seq processing and analysis
+# Production pipeline for C. elegans RNA-seq processing and analysis
 # GitHub repository: cel-rnaseq (GPLv3)
 # Author: Núria Garriga Alonso (nuriagaralon)
 
@@ -19,6 +19,8 @@ include:
     "rules/alignment.smk"
 include:
     "rules/expression.smk"
+include:
+    "rules/dge.smk"
 
 # Target files from all rules
 rule all:
@@ -31,16 +33,17 @@ rule all:
         expand("results/expression/featurecounts/{sample}_gene_counts.tsv", sample=sample_names),
         expand("results/expression/salmon/{sample}/quant.sf", sample=sample_names),
         expand("results/expression/rsem/{sample}.genes.results", sample=sample_names),
-        expand("results/expression/rsem/{sample}.isoforms.results", sample=sample_names)
-
+        expand("results/expression/rsem/{sample}.isoforms.results", sample=sample_names),
+        "results/dge/gene_counts_data.RData"
+        
 # All QC target files
 rule qc_bench:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
         "results/read_quality/QC_trimmed/qcreport_trimmed.html"
 
-# All trimming target files
-rule trim_bench:
+# Trimming target files
+rule all_trim:
     input: 
         expand("results/preprocessed/{sample}_val_1.fq.gz", sample=sample_names),
         expand("results/preprocessed/{sample}_R1.trimmed.fastq.gz", sample=sample_names)
@@ -60,6 +63,11 @@ rule expression_bench:
         expand("results/expression/salmon/{sample}/quant.sf", sample=sample_names),
         expand("results/expression/rsem/{sample}.genes.results", sample=sample_names),
         expand("results/expression/rsem/{sample}.isoforms.results", sample=sample_names)
+
+# All DGE target files
+rule dge_bench:
+    input:
+        "results/dge/gene_counts_data.RData"
 
 
 def compile_benchmarks(benchmark_fp: str, stats_fp: str):
