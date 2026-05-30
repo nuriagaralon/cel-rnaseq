@@ -6,6 +6,14 @@
 # Repository: https://github.com/nuriagaralon/cel-rnaseq
 #--------------------------
 
+# log file
+log_file <- snakemake@log[[1]]
+
+log_con <- file(log_file, open = "wt")
+sink(log_con)
+sink(log_con, type = "message")
+
+
 # Libraries
 library(dplyr)
 library(readr)
@@ -74,3 +82,7 @@ save(
   file = snakemake@output[["rdata"]]
 )
 
+Close log
+sink(type = "message")
+sink()
+close(log_con)
