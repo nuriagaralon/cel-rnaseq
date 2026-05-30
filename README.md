@@ -1,7 +1,7 @@
 # cel-rnaseq: A Snakemake pipeline for *Caenorhabditis elegans* RNA-seq data
 
 ## Overview
-Snakemake pipeline for Differential Gene Expression of *Caenorhabditis elegans* RNA-seq data. It accepts raw fastq files and generates raw count matrices.
+Snakemake pipeline for Differential Gene Expression of *Caenorhabditis elegans* RNA-seq data. It accepts raw fastq files and generates raw count matrices aggregated into an RData file.
 
 The following is a tutorial on the usage of this pipeline.
 - If you are using Windows, start from **Step 1**.
@@ -79,7 +79,7 @@ conda env create -f cel-rnaseq/config/snake_env.yaml
 conda activate snakemake
 ```
 
-### 5. Prepare the raw data and reference genome
+### 5. Prepare the reference files
 
 Download the reference files, using the `dl_WBcel235_ref.sh` script:
 
@@ -88,7 +88,7 @@ cd cel-rnaseq/raw_data/references
 bash dl_WBcel235_ref.sh
 ```
 
-This places the required FASTA (genome) and GTF (annotation) files in the resources folder. 
+This places the required FASTA (genome), GTF (annotation) and feature information files in the resources folder. 
 
 Return to the `cel-rnaseq` folder:
 
@@ -100,11 +100,11 @@ cd ../..
 > [!WARNING]
 > If the pipeline has been run before, make sure to clean the `results` folder to avoid pipeline crashes.
 
-### 6. Prepare the raw reads and config metadata
+### 6. Prepare the raw reads, sample metadata and config metadata
 
 The Ubuntu folders can be acessed from the Windows file system. To edit files easily, you can [run VSCode with WSL](https://learn.microsoft.com/es-es/windows/wsl/tutorials/wsl-vscode).
 
-Add the raw sequencing files (fastq.gz) to the samples folder, at `cel-rnaseq/raw_data/samples` 
+Add the raw sequencing files (fastq.gz) and metadata file (tsv) to the samples folder, at `cel-rnaseq/raw_data/samples`.
 
 Edit the general config file `cel-rnaseq/config/snake_config.yaml` to include the sample names and file paths, and other experimental parameters.
 
@@ -116,6 +116,7 @@ For example, this is a snapshot of the `snake_config.yaml` file for two samples:
 - The RNA-seq library must be a paired-reads library.
 - In `samples`, write each sample name and indicate the two files (forward and reverse reads) that are found in the `raw_data/samples` folder.
 - In `pairedreads` indicate the used nomenclature: each sample has two files like `Neg_1_2_{pairedreads}.fastq.gz`. In this case it is 1 and 2, but sometimes it is FW and RV or F and R.
+- In `metadata`, write the path to the sample metadata file. The first column of this file must have `Sample.ID` as a header, and the names of the samples as written in `samples` as rows.
 
 ### 7. Dry Run
 
@@ -170,3 +171,22 @@ A problem with `snake_config.yaml` would have been detected in the dry run, so f
 
 The **MultiQC tool** can cause issues if there is a past file in the folder: it will automatically add `_1` after the created file, and since it is not the file Snakemake is looking for, it will think the job failed. Erase the files and try again.
 
+## Downstream analysis: DGE and functional enrichment
+After running the full pipeline, the output is the `gene_counts_data.RData` file. This contains three data tables:
+
+- Aggregated count data from abundance estimation
+- Sample metadata
+- Feature data linking locus tags to gene identifiers
+
+This data is analysed in the `workflow/scripts/dge_deseq2.R` file, where `Sample.Group` defines the experimental condition used for differential expression analysis.
+
+The script was originally written for a specific dataset, but can serve as a start for new analyses. Several variables and settings are dataset-specific and should be reviewed before use:
+- Metadata variables: `Generation` and `Type` are the analysed variables, which combined they form `Sample.Group`; `Incubator` and `Replicate`, which are possible batch variables.
+- The reference level used for differential expression analysis, currently `Negative_G1`.
+- `sample_list`: list of pairwise contrasts to analyse. A commented line in the script generates all possible pairwise contrasts. Alternatively, specify the desired contrasts manually as a list, where each numerator–denominator pair defines one contrast.
+- `contrast_list`: subset of contrasts which are passed to the plotting functions (MA plot, volcano plot, enrichment analysis dot plot).
+- Sample labels used in PCA visualization: `Exp_2_3` and `Neg_1_2`
+- Genes `CELE_T07G12.5` and `CELE_C55B7.4` visualized with `plotCounts()`
+- Last enrichment analysis, with data extracted from the venn diagrams' data.
+ 
+ If these dataset-specific components are updated appropriately, this script can be adapted for different RNA-seq analyses.
