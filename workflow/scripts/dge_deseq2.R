@@ -17,7 +17,7 @@ library(clusterProfiler)
 library(org.Ce.eg.db)
 
 # Load data file
-load("results/dge/data.RData")
+load("results/dge/gene_counts_data.RData")
 
 ### DESEQ2 MODEL AND ANALYSIS ###
 # convert Generation and Replicate data to factors (instead of numeric)
