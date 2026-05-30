@@ -43,7 +43,7 @@ rule qc_bench:
         "results/read_quality/QC_trimmed/qcreport_trimmed.html"
 
 # Trimming target files
-rule all_trim:
+rule trim_bench:
     input: 
         expand("results/preprocessed/{sample}_val_1.fq.gz", sample=sample_names),
         expand("results/preprocessed/{sample}_R1.trimmed.fastq.gz", sample=sample_names)
