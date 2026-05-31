@@ -27,13 +27,17 @@ rule all:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
         "results/read_quality/QC_trimmed/qcreport_trimmed.html",
+        "results/read_quality/star_qc.tsv",
+        "results/read_quality/featurecounts_qc.tsv",
         "results/dge/gene_counts_data.RData"
 
 # QC target files (includes trimming)
 rule all_qc:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
-        "results/read_quality/QC_trimmed/qcreport_trimmed.html"
+        "results/read_quality/QC_trimmed/qcreport_trimmed.html",
+        "results/read_quality/star_qc.tsv",
+        "results/read_quality/featurecounts_qc.tsv"
 
 # Trimming target files
 rule all_trim:

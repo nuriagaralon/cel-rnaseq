@@ -1,5 +1,6 @@
 # QC USING FASTQC AND MULTIQC
 # Run FastQC on all raw fasta files
+# Aggregate stats results from alignment and expression
 
 rule fastqc_raw:
     input:
@@ -84,3 +85,38 @@ rule multiqc_trimmed:
         FILENAME=$(basename {output.outfile})
         multiqc {params.outdir} -n $FILENAME -o {params.outdir} &>> {log}
         """
+
+# Aggregate STAR quality logs
+
+rule aggregate_star:
+    input:
+        stats=expand("results/alignment/{sample}_Log.final.out", sample=config["samples"])
+    output:
+        stardata="results/read_quality/star_qc.tsv"
+    threads: 1
+    log:
+        "workflow/logs/aggregate_star.log"
+    benchmark:
+        "workflow/benchmarks/aggregate_star.tsv"  
+    conda:
+        "../envs/Raggregate.yaml"
+    script:
+        "../scripts/star_qc.R"
+
+# Aggregate featureCounts summaries
+
+rule aggregate_fc:
+    input:
+        stats=expand("results/expression/{sample}_gene_counts.tsv.summary", sample=config["samples"])
+    output:
+        fcdata="results/read_quality/featurecounts_qc.tsv"
+    threads: 1
+    log:
+        "workflow/logs/aggregate_fc.log"
+    benchmark:
+        "workflow/benchmarks/aggregate_fc.tsv"  
+    conda:
+        "../envs/Raggregate.yaml"
+    script:
+        "../scripts/featurecounts_qc.R"
+

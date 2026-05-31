@@ -82,7 +82,7 @@ save(
   file = snakemake@output[["rdata"]]
 )
 
-Close log
+# Close log
 sink(type = "message")
 sink()
 close(log_con)

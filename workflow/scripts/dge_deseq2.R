@@ -179,7 +179,7 @@ sample_list <- data.frame(
 #  filter(padj < alph) |> 
 #  filter(abs(log2FoldChange) >= sig_lfc)
 #
-#write.csv(res_all_filtered, 
+#write_csv(res_all_filtered, 
 #          file = paste0("results/dge/res_all_filtered_", alph, "_", sig_lfc, ".csv"))
 
 # Results, ashr shrinkage:
@@ -211,7 +211,7 @@ res_shrink_all_filtered <- res_shrink_all |>
   filter(padj < alph) |> 
   filter(abs(log2FoldChange) >= sig_lfc)
 
-write.csv(res_shrink_all_filtered, 
+write_csv(res_shrink_all_filtered, 
           file = paste0("results/dge/res_shrink_all_filtered_", alph, "_", sig_lfc, ".csv"))
 
 ### RESULTS: MA PLOT ###
