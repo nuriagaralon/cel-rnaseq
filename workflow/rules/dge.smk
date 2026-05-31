@@ -3,7 +3,7 @@
 
 rule aggregate_dge:
     input:
-        counts=expand("results/expression/{sample}_gene_counts.tsv", sample=config["samples"]),
+        counts=expand("results/expression/featurecounts/{sample}_gene_counts.tsv", sample=config["samples"]),
         features=config["genome"]["features_file"],
         metadata=config["metadata"]
     output:

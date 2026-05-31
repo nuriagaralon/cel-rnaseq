@@ -27,6 +27,8 @@ rule all:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
         "results/read_quality/QC_trimmed/qcreport_trimmed.html",
+        "results/read_quality/star_qc.tsv",
+        "results/read_quality/featurecounts_qc.tsv",
         expand("results/expression/{sample}/compare.stats", sample=sample_names),
         expand("results/preprocessed/{sample}_val_1.fq.gz", sample=sample_names),
         expand("results/expression/htseq/{sample}_gene_counts.txt", sample=sample_names),
@@ -40,7 +42,9 @@ rule all:
 rule qc_bench:
     input:
         "results/read_quality/QC_raw/qcreport_raw.html",
-        "results/read_quality/QC_trimmed/qcreport_trimmed.html"
+        "results/read_quality/QC_trimmed/qcreport_trimmed.html",
+        "results/read_quality/star_qc.tsv",
+        "results/read_quality/featurecounts_qc.tsv"
 
 # Trimming target files
 rule trim_bench:
