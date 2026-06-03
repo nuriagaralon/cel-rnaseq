@@ -174,7 +174,7 @@ The **MultiQC tool** can cause issues if there is a past file in the folder: it 
 ## Downstream analysis: DGE and functional enrichment
 After running the full pipeline, the output is the `gene_counts_data.RData` file. This contains three data tables:
 
-- Aggregated count data from abundance estimation
+- Aggregated count data from gene expression quantification
 - Sample metadata
 - Feature data linking locus tags to gene identifiers
 

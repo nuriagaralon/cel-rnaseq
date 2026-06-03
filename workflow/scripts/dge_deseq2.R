@@ -98,7 +98,7 @@ heatmap_all <- pheatmap(ddsvst_cor,
                         )$gtable
 
 ggsave(filename = "results/dge/heatmap.pdf",
-       plot = heatmap_all, width = 6, height = 5.5)
+       plot = heatmap_all, width = 8, height = 5.5)
 
 ### DESEQ2 RESULTS ###
 #Significant filters: padj < 0.05 and log2FC = 1 (Fold Change = 2)
@@ -226,8 +226,13 @@ maplot_list <- map(deseq_shrink_list[contrast_list],
                    ~ ggmaplot(.x, fdr = 0.05, fc = 1, size = 0.2, top = 0))
 
 # Save MA plots
-maplots <- ggarrange(plotlist = maplot_list, nrow=1, labels="AUTO")
-ggsave(filename = "results/dge/MAplotsG3G1.pdf", plot = maplots, height = 3.25, width = 13)
+blank <- ggplot() + theme_void()
+
+maplots <- ggarrange(ggarrange(plotlist = maplot_list[1:2], nrow=1, labels="AUTO"),
+                     ggarrange(plotlist = c(blank, maplot_list[3], blank), nrow=1, labels=c("", "C"),
+                               widths = c(0.5, 1, 0.5)), nrow=2) 
+
+ggsave(filename = "results/dge/MAplotsG3G1.pdf", plot = maplots, height = 6.5, width = 10)
 
 ### RESULTS: VOLCANO PLOT ###
 # This is an example. Edit contrast to your convenience
@@ -261,18 +266,24 @@ volc_plots <- map(volc_contrast_list, function(volc_contrast){
   )
 })
 
-volc_save <- ggarrange(plotlist = volc_plots,
+volc_save <- ggarrange(plotlist = volc_plots[1:2],
                       labels = "AUTO", nrow = 1, common.legend = TRUE,
                       font.label = list(size = 20))
 
+volc_save <- ggarrange(ggarrange(plotlist = volc_plots[1:2], nrow=1, labels="AUTO",
+                                 font.label = list(size = 20), common.legend = TRUE),
+                     ggarrange(plotlist = c(blank, volc_plots[3], blank), nrow=1,
+                               labels=c("", "C"), legend = "none", font.label = list(size = 20),
+                               widths = c(0.5, 1, 0.5)), nrow=2) 
+
 ggsave(filename = "results/dge/volcanos13.pdf",
-       width = 17, height = 6.5, plot = volc_save)
+       width = 13, height = 12, plot = volc_save)
 
 ### RESULTS: PLOT COUNTS ###
 pvalcounts <- plotCounts(dds,
-                         gene = "CELE_T07G12.5",
+                         gene = "CELE_T23E7.6",
                          intgroup = "Generation",
-                         returnData = TRUE) |> mutate(Gene = "svct-1")
+                         returnData = TRUE) |> mutate(Gene = "T23E7.6")
 
 lfccounts <- plotCounts(dds,
                         gene = "CELE_C55B7.4",
