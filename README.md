@@ -190,3 +190,55 @@ The script was originally written for a specific dataset, but can serve as a sta
 - Last enrichment analysis, with data extracted from the venn diagrams' data.
  
  If these dataset-specific components are updated appropriately, this script can be adapted for different RNA-seq analyses.
+
+## Results
+### MultiQC outputs
+MultiQC outputs have a Help button for each category which explains what the plot means and what it should look like. In some plots, it also explains what might cause FastQC to flag the metric as low quality, even if it is as expected or not problematic for RNAseq.
+
+The most important metric is the Sequence Quality Histogram, which should have all bases in the green range (above Phred score of 30). Then, Per Sequence Quality Scores and GC and N content. Adapter content should also be low after trimming.
+
+Possible non problematic FastQC failures (which are orange or red in the heatmap at the bottom) include:
+
+- Per Tile Sequence Quality: is generally not a problem as long as Sequence Quality Histograms are good, most of the tiles are blue and any prominent lines are green.
+- Per Base Sequence Content: Ignoring the first few base pairs, as long as the rest are parallel lines (or a brown heatmap), the quality is good.
+- Sequence Length Distribution: It should be green before trimming, but it often shows as orange after trimming.
+- Sequence Duplication Levels: If the duplication is in the 10 to 1k range, these are normal values for RNA-seq, due to highly expressed transcripts being highly duplicated sequences.
+
+### Alignment and expression
+When interpreting these summary metrics, we should not focus on differences between samples if they are small, but rather on the overall quality.
+
+For alignment quality, the most important metric is the **Unique_pct**, which should be high (over 90% is best), as it reflects how well the reads aligned to a single location. Unmapped_pct should be very low, as it is the reads that did not map to any location, and it is typically due to contamination if the MultiQC metrics were good.
+
+For quantification, the most important metric is the **Assigned_pct**, which should be high (over 80%), as it reflects the reads that were counted and can be used for downstream analyses. The rest indicate reads that will not be used, but it may be useful to know if it is because they did not map anywhere (NoFeatures_pct) or they mapped to multiple features (MultiMapping_pct) or were ambiguous (Ambiguity_pct).
+
+### Differential gene expression
+#### Exploratory Data Analysis
+EDA is a way to assess the quality of the dataset and explore relationships between samples.
+
+The PCA visualizes the main sources of variation. Like this, we can see if our experimental conditions are driving our analysis, or if we have batch effects. If we have a batch effect, we should add that variable to the design matrix in the dds object:
+
+```
+dds <- DESeqDataSetFromMatrix(
+  countData = count_df,
+  colData = meta_df,
+  design = ~ Sample.Group + {batch_variable}
+)
+```
+
+The correlation heatmap with hierarchical clustering assesses global similarity of the samples, and is another way of visualizing clustering.
+
+#### Differential gene expression
+From this section, we get a csv file which contains the differentially expressed genes, which have an absolute shrunken Log$_2$ Fold Change above the threshold (default 1) and an adjusted p-value under the threshold (default 0.05). The file is named `res_shrink_all_filtered_{alpha}_{significant_LFC}.csv`.
+
+Then, the plots for the selected contrasts in the `contrast_list` object:
+- MA plots: relationship between mean expression and LFC. After shrinking, it should be a diamond shape centered on 0. If there are a lot of upregulated or downregulated genes, the shape might be slightly shifted.
+- Volcano plots: Shows the most significant genes (y axis) and the largest effect sizes (x axis). The lines indicate the p-value and LFC thresholds.
+- Counts plots: the counts of the selected genes across the selected condition
+
+### Enrichment analysis
+Upregulated (LFC $>$ 0) and downregulated (LFC $<$ 0) gene lists are analysed separately to distinguish "activated" and "deactivated". In this analysis, we analyzed Gene Ontology Biological Process terms (GO BP).
+
+Results are visualized with a dot plot where:
+- Each dot represents a functional term 
+- Dot size corresponds to the number of genes involved
+- Dot colour represents statistical significance
