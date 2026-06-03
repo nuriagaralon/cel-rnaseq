@@ -228,7 +228,7 @@ dds <- DESeqDataSetFromMatrix(
 The correlation heatmap with hierarchical clustering assesses global similarity of the samples, and is another way of visualizing clustering.
 
 #### Differential gene expression
-From this section, we get a csv file which contains the differentially expressed genes, which have an absolute shrunken Log$_2$ Fold Change above the threshold (default 1) and an adjusted p-value under the threshold (default 0.05). The file is named `res_shrink_all_filtered_{alpha}_{significant_LFC}.csv`.
+From this section, we get a csv file which contains the differentially expressed genes, which have an absolute shrunken Log2 Fold Change above the threshold (default 1) and an adjusted p-value under the threshold (default 0.05). The file is named `res_shrink_all_filtered_{alpha}_{significant_LFC}.csv`.
 
 Then, the plots for the selected contrasts in the `contrast_list` object:
 - MA plots: relationship between mean expression and LFC. After shrinking, it should be a diamond shape centered on 0. If there are a lot of upregulated or downregulated genes, the shape might be slightly shifted.
